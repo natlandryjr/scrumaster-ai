@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,98 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+  padding: 0 1rem;
+}
+
+.logo-wrap {
+  margin-bottom: 2.5rem;
+}
+
+.app-logo {
+  width: 260px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 4px 24px rgba(33, 150, 243, 0.10));
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 24px;
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tagline {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #1565c0;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.login-btn,
+.signup-btn {
+  padding: 0.85em 2.2em;
+  font-size: 1.1em;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2196f3 0%, #21cbf3 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.10);
+  transition: background 0.2s, transform 0.2s;
+  outline: none;
+}
+
+.signup-btn {
+  background: linear-gradient(90deg, #21cbf3 0%, #2196f3 100%);
+}
+
+.login-btn:hover,
+.signup-btn:hover {
+  background: linear-gradient(90deg, #1976d2 0%, #00bcd4 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+
+@media (max-width: 600px) {
+  .glass-card {
+    padding: 1.5rem 0.5rem 1.5rem 0.5rem;
+    max-width: 95vw;
+  }
+
+  .app-logo {
+    width: 180px;
+  }
+
+  .tagline {
+    font-size: 1.05rem;
+  }
 }

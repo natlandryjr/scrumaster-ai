@@ -1,52 +1,48 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import { supabase } from './lib/supabaseClient'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
+import RoleDashboard from './RoleDashboard'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [supabaseStatus, setSupabaseStatus] = useState('Checking...')
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function checkConnection() {
-      try {
-        const { error } = await supabase.from('users').select('*').limit(1)
-        if (error) {
-          setSupabaseStatus('Connection failed: ' + error.message)
-        } else {
-          setSupabaseStatus('Connection successful!')
-        }
-      } catch (err) {
-        setSupabaseStatus('Connection failed: ' + err.message)
-      }
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      setUser(data?.user ?? null)
+      setLoading(false)
     }
-    checkConnection()
+    getUser()
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => {
+      listener?.subscription.unsubscribe()
+    }
   }, [])
 
+  if (loading) return <div>Loading...</div>
+  if (user) return <RoleDashboard userId={user.id} />
+
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="home-container">
+      <div className="glass-card">
+        <div className="logo-wrap">
+          <img src="/scrumaster_ai_logo.png" alt="Scrumaster AI Logo" className="app-logo" />
+        </div>
+        <h1 className="tagline">AI-Powered Agile for SAFe, Scrum & Hybrid Teams</h1>
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa, variables: { default: { colors: { brand: '#2196f3', brandAccent: '#1565c0' } } } }}
+          providers={['google']}
+          theme="light"
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Supabase status: {supabaseStatus}
-      </p>
-    </>
+    </div>
   )
 }
 
