@@ -6,9 +6,9 @@ import RoleDashboard from './RoleDashboard'
 import { FaRobot, FaUserShield, FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
-import { TerminologyProvider } from './terminologyContext'
-import TerminologyToggle from './TerminologyToggle'
-import { useTranslate } from './translate'
+import { TerminologyProvider } from './terminologyContext.jsx'
+import TerminologyToggle from './TerminologyToggle.jsx'
+import { useTranslate } from './translate.jsx'
 
 const FEATURES = [
   { icon: <FaRobot size={32} color="#2196f3" />, title: 'AI Planning Assistant', desc: 'Automate PI, sprint, and backlog planning with AI-driven insights.' },

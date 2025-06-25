@@ -1,4 +1,4 @@
-import { useTerminology, TERMINOLOGY_MODES } from './terminologyContext';
+import { useTerminology, TERMINOLOGY_MODES } from './terminologyContext.jsx';
 
 const TERM_MAP = {
     // Core Agile/Scrum terms

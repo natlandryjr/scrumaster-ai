@@ -17,7 +17,7 @@ import {
     FaCog,
     FaBell
 } from 'react-icons/fa';
-import { useTranslate } from './translate';
+import { useTranslate } from './translate.jsx';
 
 // Same styles as RoleDashboard
 const styles = {

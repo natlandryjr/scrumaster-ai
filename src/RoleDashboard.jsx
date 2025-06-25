@@ -20,7 +20,7 @@ import {
     FaSun,
     FaMoon
 } from 'react-icons/fa';
-import { useTranslate } from './translate';
+import { useTranslate } from './translate.jsx';
 
 // Theme-aware styles
 const getStyles = (isDarkMode) => ({

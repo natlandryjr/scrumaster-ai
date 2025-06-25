@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
-import { useTranslate } from './translate';
+import { useTranslate } from './translate.jsx';
 
 const fetchAISuggestion = async ({ keepDoing, startDoing, stopDoing }) => {
     // Placeholder: Replace with your Supabase Edge Function or OpenAI API call

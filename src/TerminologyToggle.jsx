@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTerminology, TERMINOLOGY_MODES } from './terminologyContext';
+import { useTerminology, TERMINOLOGY_MODES } from './terminologyContext.jsx';
 
 export default function TerminologyToggle() {
     const { mode, toggleMode } = useTerminology();
