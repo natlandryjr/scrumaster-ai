@@ -230,13 +230,9 @@ function App() {
     )
   }
 
-  if (user) {
-    return <RoleDashboard userId={user.id} />
-  }
-
   return (
     <TerminologyProvider>
-      <LandingContent />
+      {user ? <RoleDashboard userId={user.id} /> : <LandingContent />}
     </TerminologyProvider>
   )
 }
