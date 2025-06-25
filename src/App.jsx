@@ -32,63 +32,100 @@ function App() {
 
   useEffect(() => {
     const getOrCreateUserProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const authUser = session?.user
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const authUser = session?.user
 
-      if (authUser) {
-        const { data: profile, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('auth_id', authUser.id)
-          .maybeSingle()
-
-        if (error) {
-          console.error('Error fetching user profile:', error.message)
-        }
-
-        if (profile) {
-          setUser(profile)
-        } else {
-          // Auto-create user if not found
-          const { data: insertedUser, error: insertError } = await supabase
+        if (authUser) {
+          const { data: profile, error } = await supabase
             .from('users')
-            .insert({
-              auth_id: authUser.id,
-              email: authUser.email,
-              full_name: authUser.user_metadata?.full_name || authUser.email,
-              roles: ['ScrumMaster'] // default role
-            })
-            .select()
-            .single()
+            .select('*')
+            .eq('auth_id', authUser.id)
+            .maybeSingle()
 
-          if (insertError) {
-            console.error('Error creating user profile:', insertError.message)
-          } else {
-            setUser(insertedUser)
+          if (error) {
+            console.error('Error fetching user profile:', error.message)
           }
-        }
-      }
 
-      setLoading(false)
+          if (profile) {
+            setUser(profile)
+          } else {
+            // Auto-create user if not found
+            const { data: insertedUser, error: insertError } = await supabase
+              .from('users')
+              .insert({
+                auth_id: authUser.id,
+                email: authUser.email,
+                full_name: authUser.user_metadata?.full_name || authUser.email,
+                roles: ['ScrumMaster'] // default role
+              })
+              .select()
+              .single()
+
+            if (insertError) {
+              console.error('Error creating user profile:', insertError.message)
+            } else {
+              setUser(insertedUser)
+            }
+          }
+        } else {
+          setUser(null)
+        }
+      } catch (error) {
+        console.error('Error in getOrCreateUserProfile:', error)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
     }
 
     getOrCreateUserProfile()
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        getOrCreateUserProfile()
-      } else {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email)
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        await getOrCreateUserProfile()
+      } else if (event === 'SIGNED_OUT') {
         setUser(null)
+        setLoading(false)
       }
     })
 
     return () => {
-      listener?.subscription?.unsubscribe()
+      subscription?.unsubscribe()
     }
   }, [])
 
-  if (loading) return <div>Loading...</div>
-  if (user) return <RoleDashboard userId={user.id} />
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f7fafd',
+        fontFamily: 'Inter, Segoe UI, Arial, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '3rem',
+            height: '3rem',
+            border: '3px solid #e5e7eb',
+            borderTop: '3px solid #2563eb',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }}></div>
+          <p style={{ color: '#6b7280', fontSize: '1rem' }}>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (user) {
+    return <RoleDashboard userId={user.id} />
+  }
 
   return (
     <div className="landing-root">
@@ -158,6 +195,10 @@ function App() {
                 appearance={{ theme: ThemeSupa, variables: { default: { colors: { brand: '#2196f3', brandAccent: '#1565c0' } } } }}
                 providers={['google']}
                 theme="light"
+                onSuccess={(session) => {
+                  console.log('Login successful:', session)
+                  setShowLogin(false)
+                }}
               />
             </motion.div>
           </motion.div>

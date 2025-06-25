@@ -13,42 +13,84 @@ import {
     FaCheckCircle,
     FaSpinner,
     FaBars,
-    FaTimes
+    FaTimes,
+    FaSignOutAlt,
+    FaCog,
+    FaBell
 } from 'react-icons/fa';
-import './dashboard.css';
 
-// Inline styles as fallback
+// Inline styles for consistent design
 const styles = {
     container: {
         minHeight: '100vh',
         backgroundColor: '#f7fafd',
-        fontFamily: 'Inter, Segoe UI, Arial, sans-serif'
+        fontFamily: 'Inter, Segoe UI, Arial, sans-serif',
+        display: 'flex'
     },
     sidebar: {
         position: 'fixed',
         top: 0,
         left: 0,
         height: '100vh',
-        width: '256px',
+        width: '280px',
         backgroundColor: 'white',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         zIndex: 40,
         transform: 'translateX(-100%)',
-        transition: 'transform 0.3s ease-in-out'
+        transition: 'transform 0.3s ease-in-out',
+        overflowY: 'auto'
     },
     sidebarOpen: {
         transform: 'translateX(0)'
     },
     sidebarDesktop: {
-        position: 'static',
-        transform: 'none'
+        position: 'fixed',
+        transform: 'translateX(0)'
     },
     mainContent: {
+        flex: 1,
         marginLeft: '0',
-        transition: 'margin-left 0.3s ease-in-out'
+        transition: 'margin-left 0.3s ease-in-out',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column'
     },
     mainContentDesktop: {
-        marginLeft: '256px'
+        marginLeft: '280px'
+    },
+    header: {
+        backgroundColor: 'white',
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '1rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 30
+    },
+    headerLeft: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem'
+    },
+    headerRight: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem'
+    },
+    mobileToggle: {
+        display: 'block',
+        backgroundColor: 'white',
+        border: '1px solid #e5e7eb',
+        borderRadius: '0.5rem',
+        padding: '0.5rem',
+        cursor: 'pointer',
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
+    },
+    mobileToggleDesktop: {
+        display: 'none'
     },
     card: {
         backgroundColor: 'white',
@@ -63,7 +105,8 @@ const styles = {
         boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
         border: '1px solid #e5e7eb',
         padding: '1.5rem',
-        transition: 'all 0.2s ease'
+        transition: 'all 0.2s ease',
+        cursor: 'pointer'
     },
     statCardHover: {
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
@@ -77,10 +120,30 @@ const styles = {
         padding: '0.5rem 1rem',
         fontWeight: '600',
         cursor: 'pointer',
-        transition: 'background-color 0.2s ease'
+        transition: 'background-color 0.2s ease',
+        fontSize: '0.875rem'
     },
-    buttonHover: {
-        backgroundColor: '#1d4ed8'
+    buttonSecondary: {
+        backgroundColor: 'transparent',
+        color: '#6b7280',
+        border: '1px solid #d1d5db',
+        borderRadius: '0.5rem',
+        padding: '0.5rem 1rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        fontSize: '0.875rem'
+    },
+    buttonDanger: {
+        backgroundColor: '#dc2626',
+        color: 'white',
+        border: 'none',
+        borderRadius: '0.5rem',
+        padding: '0.5rem 1rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s ease',
+        fontSize: '0.875rem'
     },
     loadingContainer: {
         minHeight: '100vh',
@@ -102,6 +165,46 @@ const styles = {
         borderRadius: '0.5rem',
         padding: '1.5rem',
         maxWidth: '28rem'
+    },
+    content: {
+        flex: 1,
+        padding: '2rem',
+        backgroundColor: '#f7fafd'
+    },
+    statsGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '1.5rem',
+        marginBottom: '2rem'
+    },
+    sectionGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+        gap: '1.5rem'
+    },
+    navItem: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0.75rem 1rem',
+        fontSize: '0.875rem',
+        fontWeight: '500',
+        borderRadius: '0.5rem',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        backgroundColor: 'transparent',
+        color: '#6b7280',
+        textAlign: 'left'
+    },
+    navItemActive: {
+        backgroundColor: '#dbeafe',
+        color: '#1d4ed8',
+        borderRight: '2px solid #1d4ed8'
+    },
+    navItemHover: {
+        backgroundColor: '#f3f4f6',
+        color: '#374151'
     }
 };
 
@@ -112,6 +215,31 @@ const RoleDashboard = ({ userId }) => {
     const [data, setData] = useState({});
     const [activeTab, setActiveTab] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsDesktop(window.innerWidth >= 1024);
+            if (window.innerWidth >= 1024) {
+                setSidebarOpen(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Logout function
+    const handleLogout = async () => {
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            // The App component will handle the redirect
+        } catch (error) {
+            console.error('Error logging out:', error.message);
+        }
+    };
 
     useEffect(() => {
         const fetchUserAndData = async () => {
@@ -140,7 +268,7 @@ const RoleDashboard = ({ userId }) => {
                             return sum + completed;
                         }, 0) / sprints.length).toFixed(1)
                         : 0;
-                    dashboardData = { velocity, sprints, retros };
+                    dashboardData = { velocity, sprints, retros, workItems };
                 } else if (primaryRole === 'ProductOwner') {
                     // Backlog items, priority features, recent completions
                     const { data: backlog } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id).eq('status', 'Backlog');
@@ -222,28 +350,11 @@ const RoleDashboard = ({ userId }) => {
     if (primaryRole === 'ScrumMaster') {
         return (
             <div style={styles.container}>
-                {/* Mobile Sidebar Toggle */}
-                <div style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 50, display: 'block' }}>
-                    <button
-                        onClick={() => setSidebarOpen(!sidebarOpen)}
-                        style={{
-                            backgroundColor: 'white',
-                            padding: '0.5rem',
-                            borderRadius: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                            border: 'none',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        {sidebarOpen ? <FaTimes style={{ color: '#6b7280' }} /> : <FaBars style={{ color: '#6b7280' }} />}
-                    </button>
-                </div>
-
                 {/* Sidebar */}
                 <div style={{
                     ...styles.sidebar,
-                    ...(sidebarOpen ? styles.sidebarOpen : {}),
-                    ...(window.innerWidth >= 1024 ? styles.sidebarDesktop : {})
+                    ...(sidebarOpen || isDesktop ? styles.sidebarOpen : {}),
+                    ...(isDesktop ? styles.sidebarDesktop : {})
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         {/* Header */}
@@ -267,24 +378,13 @@ const RoleDashboard = ({ userId }) => {
                                             <button
                                                 onClick={() => setActiveTab(item.id)}
                                                 style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    padding: '0.75rem 1rem',
-                                                    fontSize: '0.875rem',
-                                                    fontWeight: '500',
-                                                    borderRadius: '0.5rem',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s ease',
-                                                    backgroundColor: activeTab === item.id ? '#dbeafe' : 'transparent',
-                                                    color: activeTab === item.id ? '#1d4ed8' : '#6b7280',
-                                                    borderRight: activeTab === item.id ? '2px solid #1d4ed8' : 'none'
+                                                    ...styles.navItem,
+                                                    ...(activeTab === item.id ? styles.navItemActive : {})
                                                 }}
                                                 onMouseEnter={(e) => {
                                                     if (activeTab !== item.id) {
-                                                        e.target.style.backgroundColor = '#f3f4f6';
-                                                        e.target.style.color = '#374151';
+                                                        e.target.style.backgroundColor = styles.navItemHover.backgroundColor;
+                                                        e.target.style.color = styles.navItemHover.color;
                                                     }
                                                 }}
                                                 onMouseLeave={(e) => {
@@ -303,9 +403,9 @@ const RoleDashboard = ({ userId }) => {
                             </ul>
                         </nav>
 
-                        {/* User Info */}
+                        {/* User Info & Logout */}
                         <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb' }}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                                 <div style={{
                                     width: '2rem',
                                     height: '2rem',
@@ -319,13 +419,26 @@ const RoleDashboard = ({ userId }) => {
                                         {(user.full_name || user.email).charAt(0).toUpperCase()}
                                     </span>
                                 </div>
-                                <div style={{ marginLeft: '0.75rem' }}>
+                                <div style={{ marginLeft: '0.75rem', flex: 1 }}>
                                     <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
                                         {user.full_name || 'User'}
                                     </p>
                                     <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>{primaryRole}</p>
                                 </div>
                             </div>
+                            <button
+                                onClick={handleLogout}
+                                style={{
+                                    ...styles.buttonDanger,
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <FaSignOutAlt style={{ marginRight: '0.5rem' }} />
+                                Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -333,50 +446,59 @@ const RoleDashboard = ({ userId }) => {
                 {/* Main Content */}
                 <div style={{
                     ...styles.mainContent,
-                    ...(window.innerWidth >= 1024 ? styles.mainContentDesktop : {})
+                    ...(isDesktop ? styles.mainContentDesktop : {})
                 }}>
                     {/* Top Header */}
-                    <header style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-                        borderBottom: '1px solid #e5e7eb'
-                    }}>
-                        <div style={{ padding: '1rem 1.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div>
-                                    <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
-                                        Scrum Master Dashboard
-                                    </h1>
-                                    <p style={{ color: '#6b7280' }}>
-                                        Manage your team's agile process and track progress
-                                    </p>
-                                </div>
-                                <div style={{ display: 'none' }}>
-                                    <button style={{
-                                        ...styles.button,
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}>
-                                        <FaCalendarAlt style={{ marginRight: '0.5rem' }} />
-                                        New Sprint
-                                    </button>
-                                </div>
+                    <header style={styles.header}>
+                        <div style={styles.headerLeft}>
+                            <button
+                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                style={{
+                                    ...styles.mobileToggle,
+                                    ...(isDesktop ? styles.mobileToggleDesktop : {})
+                                }}
+                            >
+                                <FaBars style={{ color: '#6b7280' }} />
+                            </button>
+                            <div>
+                                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+                                    {navItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
+                                </h1>
+                                <p style={{ color: '#6b7280', margin: 0, fontSize: '0.875rem' }}>
+                                    Manage your team's agile process and track progress
+                                </p>
                             </div>
+                        </div>
+                        <div style={styles.headerRight}>
+                            <button style={styles.buttonSecondary}>
+                                <FaBell style={{ marginRight: '0.5rem' }} />
+                                Notifications
+                            </button>
+                            <button style={styles.buttonSecondary}>
+                                <FaCog style={{ marginRight: '0.5rem' }} />
+                                Settings
+                            </button>
                         </div>
                     </header>
 
                     {/* Dashboard Content */}
-                    <main style={{ padding: '1.5rem' }}>
+                    <div style={styles.content}>
                         {activeTab === 'dashboard' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div>
                                 {/* Stats Cards */}
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                                    gap: '1.5rem'
-                                }}>
+                                <div style={styles.statsGrid}>
                                     {/* Team Velocity Card */}
-                                    <div style={styles.statCard}>
+                                    <div
+                                        style={styles.statCard}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
+                                            e.target.style.transform = styles.statCardHover.transform;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.boxShadow = styles.statCard.boxShadow;
+                                            e.target.style.transform = 'none';
+                                        }}
+                                    >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
                                                 <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
@@ -410,7 +532,17 @@ const RoleDashboard = ({ userId }) => {
                                     </div>
 
                                     {/* Active Sprints Count */}
-                                    <div style={styles.statCard}>
+                                    <div
+                                        style={styles.statCard}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
+                                            e.target.style.transform = styles.statCardHover.transform;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.boxShadow = styles.statCard.boxShadow;
+                                            e.target.style.transform = 'none';
+                                        }}
+                                    >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
                                                 <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
@@ -438,7 +570,17 @@ const RoleDashboard = ({ userId }) => {
                                     </div>
 
                                     {/* Retrospectives Count */}
-                                    <div style={styles.statCard}>
+                                    <div
+                                        style={styles.statCard}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
+                                            e.target.style.transform = styles.statCardHover.transform;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.boxShadow = styles.statCard.boxShadow;
+                                            e.target.style.transform = 'none';
+                                        }}
+                                    >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
                                                 <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
@@ -466,173 +608,201 @@ const RoleDashboard = ({ userId }) => {
                                     </div>
                                 </div>
 
-                                {/* Active Sprints Section */}
-                                <div style={styles.card}>
-                                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                                        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
-                                            <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
-                                            Active Sprints
-                                        </h2>
-                                    </div>
-                                    <div style={{ padding: '1.5rem' }}>
-                                        {data.sprints && data.sprints.length > 0 ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                {data.sprints.map((sprint) => (
-                                                    <div key={sprint.id} style={{
-                                                        border: '1px solid #e5e7eb',
-                                                        borderRadius: '0.5rem',
-                                                        padding: '1rem',
-                                                        transition: 'box-shadow 0.2s ease'
-                                                    }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                            <div>
-                                                                <h3 style={{ fontWeight: '500', color: '#111827' }}>{sprint.name}</h3>
-                                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                                                                    {sprint.start_date} - {sprint.end_date}
-                                                                </p>
-                                                            </div>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                                <div style={{ textAlign: 'right' }}>
-                                                                    <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
-                                                                        {data.workItems?.filter(wi => wi.sprint_id === sprint.id).length || 0}
+                                {/* Content Sections */}
+                                <div style={styles.sectionGrid}>
+                                    {/* Active Sprints Section */}
+                                    <div style={styles.card}>
+                                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
+                                                <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
+                                                Active Sprints
+                                            </h2>
+                                        </div>
+                                        <div style={{ padding: '1.5rem' }}>
+                                            {data.sprints && data.sprints.length > 0 ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                    {data.sprints.map((sprint) => (
+                                                        <div key={sprint.id} style={{
+                                                            border: '1px solid #e5e7eb',
+                                                            borderRadius: '0.5rem',
+                                                            padding: '1rem',
+                                                            transition: 'box-shadow 0.2s ease'
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                <div>
+                                                                    <h3 style={{ fontWeight: '500', color: '#111827' }}>{sprint.name}</h3>
+                                                                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                        {sprint.start_date} - {sprint.end_date}
                                                                     </p>
-                                                                    <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>stories</p>
                                                                 </div>
-                                                                <div style={{
-                                                                    width: '0.75rem',
-                                                                    height: '0.75rem',
-                                                                    backgroundColor: '#16a34a',
-                                                                    borderRadius: '50%'
-                                                                }}></div>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                                    <div style={{ textAlign: 'right' }}>
+                                                                        <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
+                                                                            {data.workItems?.filter(wi => wi.sprint_id === sprint.id).length || 0}
+                                                                        </p>
+                                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>stories</p>
+                                                                    </div>
+                                                                    <div style={{
+                                                                        width: '0.75rem',
+                                                                        height: '0.75rem',
+                                                                        backgroundColor: '#16a34a',
+                                                                        borderRadius: '50%'
+                                                                    }}></div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                <FaCalendarAlt style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                <p style={{ color: '#6b7280' }}>No active sprints</p>
-                                                <button style={{
-                                                    ...styles.button,
-                                                    marginTop: '1rem'
-                                                }}>
-                                                    Create Sprint
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Retrospectives Section */}
-                                <div style={styles.card}>
-                                    <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                                        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
-                                            <FaComments style={{ marginRight: '0.75rem', color: '#9333ea' }} />
-                                            Recent Retrospectives
-                                        </h2>
-                                    </div>
-                                    <div style={{ padding: '1.5rem' }}>
-                                        {data.retros && data.retros.length > 0 ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '24rem', overflowY: 'auto' }}>
-                                                {data.retros.map((retro) => (
-                                                    <div key={retro.id} style={{
-                                                        border: '1px solid #e5e7eb',
-                                                        borderRadius: '0.5rem',
-                                                        padding: '1rem',
-                                                        transition: 'box-shadow 0.2s ease'
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                                                    <FaCalendarAlt style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
+                                                    <p style={{ color: '#6b7280' }}>No active sprints</p>
+                                                    <button style={{
+                                                        ...styles.button,
+                                                        marginTop: '1rem'
                                                     }}>
-                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                                                            <div style={{ flex: 1 }}>
-                                                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                                    <h3 style={{ fontWeight: '500', color: '#111827' }}>
-                                                                        Sprint {retro.sprint_id}
-                                                                    </h3>
-                                                                    <span style={{
-                                                                        marginLeft: '0.5rem',
-                                                                        padding: '0.25rem 0.5rem',
-                                                                        backgroundColor: '#dcfce7',
-                                                                        color: '#166534',
-                                                                        fontSize: '0.75rem',
-                                                                        borderRadius: '9999px'
+                                                        Create Sprint
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Retrospectives Section */}
+                                    <div style={styles.card}>
+                                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
+                                                <FaComments style={{ marginRight: '0.75rem', color: '#9333ea' }} />
+                                                Recent Retrospectives
+                                            </h2>
+                                        </div>
+                                        <div style={{ padding: '1.5rem' }}>
+                                            {data.retros && data.retros.length > 0 ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '24rem', overflowY: 'auto' }}>
+                                                    {data.retros.map((retro) => (
+                                                        <div key={retro.id} style={{
+                                                            border: '1px solid #e5e7eb',
+                                                            borderRadius: '0.5rem',
+                                                            padding: '1rem',
+                                                            transition: 'box-shadow 0.2s ease'
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                                                <div style={{ flex: 1 }}>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                                                        <h3 style={{ fontWeight: '500', color: '#111827' }}>
+                                                                            Sprint {retro.sprint_id}
+                                                                        </h3>
+                                                                        <span style={{
+                                                                            marginLeft: '0.5rem',
+                                                                            padding: '0.25rem 0.5rem',
+                                                                            backgroundColor: '#dcfce7',
+                                                                            color: '#166534',
+                                                                            fontSize: '0.75rem',
+                                                                            borderRadius: '9999px'
+                                                                        }}>
+                                                                            Completed
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style={{
+                                                                        display: 'grid',
+                                                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                                                        gap: '1rem',
+                                                                        fontSize: '0.875rem'
                                                                     }}>
-                                                                        Completed
-                                                                    </span>
+                                                                        <div>
+                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Keep Doing</p>
+                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                                {retro.keepDoing || 'No items'}
+                                                                            </p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Start Doing</p>
+                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                                {retro.startDoing || 'No items'}
+                                                                            </p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Stop Doing</p>
+                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                                {retro.stopDoing || 'No items'}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div style={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                                                                    gap: '1rem',
-                                                                    fontSize: '0.875rem'
+                                                                <button style={{
+                                                                    ...styles.button,
+                                                                    marginLeft: '1rem',
+                                                                    fontSize: '0.875rem',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center'
                                                                 }}>
-                                                                    <div>
-                                                                        <p style={{ fontWeight: '500', color: '#374151' }}>Keep Doing</p>
-                                                                        <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
-                                                                            {retro.keepDoing || 'No items'}
-                                                                        </p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <p style={{ fontWeight: '500', color: '#374151' }}>Start Doing</p>
-                                                                        <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
-                                                                            {retro.startDoing || 'No items'}
-                                                                        </p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <p style={{ fontWeight: '500', color: '#374151' }}>Stop Doing</p>
-                                                                        <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
-                                                                            {retro.stopDoing || 'No items'}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
+                                                                    <FaEye style={{ marginRight: '0.25rem' }} />
+                                                                    View Details
+                                                                </button>
                                                             </div>
-                                                            <button style={{
-                                                                ...styles.button,
-                                                                marginLeft: '1rem',
-                                                                fontSize: '0.875rem',
-                                                                display: 'flex',
-                                                                alignItems: 'center'
-                                                            }}>
-                                                                <FaEye style={{ marginRight: '0.25rem' }} />
-                                                                View Details
-                                                            </button>
                                                         </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                <FaComments style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                <p style={{ color: '#6b7280' }}>No retrospectives yet</p>
-                                                <button style={{
-                                                    ...styles.button,
-                                                    marginTop: '1rem',
-                                                    backgroundColor: '#9333ea'
-                                                }}>
-                                                    Schedule Retrospective
-                                                </button>
-                                            </div>
-                                        )}
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                                                    <FaComments style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
+                                                    <p style={{ color: '#6b7280' }}>No retrospectives yet</p>
+                                                    <button style={{
+                                                        ...styles.button,
+                                                        marginTop: '1rem',
+                                                        backgroundColor: '#9333ea'
+                                                    }}>
+                                                        Schedule Retrospective
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* Other tabs can be implemented here */}
-                        {activeTab !== 'dashboard' && (
+                        {/* Other tabs */}
+                        {activeTab === 'team' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>
-                                        {navItems.find(item => item.id === activeTab)?.label}
-                                    </h2>
-                                    <p style={{ color: '#6b7280' }}>This section is coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Team Management</h2>
+                                    <p style={{ color: '#6b7280' }}>Team management features coming soon!</p>
                                 </div>
                             </div>
                         )}
-                    </main>
+
+                        {activeTab === 'risks' && (
+                            <div style={styles.card}>
+                                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Risk Management</h2>
+                                    <p style={{ color: '#6b7280' }}>ROAM risk tracking features coming soon!</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'metrics' && (
+                            <div style={styles.card}>
+                                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Metrics & Analytics</h2>
+                                    <p style={{ color: '#6b7280' }}>Advanced metrics and analytics coming soon!</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'retrospectives' && (
+                            <div style={styles.card}>
+                                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Retrospectives</h2>
+                                    <p style={{ color: '#6b7280' }}>Retrospective management features coming soon!</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Mobile overlay */}
-                {sidebarOpen && (
+                {sidebarOpen && !isDesktop && (
                     <div
                         style={{
                             position: 'fixed',
