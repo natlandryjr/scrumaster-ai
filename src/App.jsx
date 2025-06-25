@@ -46,7 +46,7 @@ function LandingContent() {
 
   const pricing = [
     { tier: translate('Starter'), price: 'Free', features: [translate('1 Team'), translate('Basic AI Planning'), translate('Community Support')], cta: translate('Get Started') },
-    { tier: translate('Pro'), price: '$12/mo', features: [translate('Up to 5 Teams'), translate('Advanced AI'), translate('Role Dashboards'), translate('Priority Support')], cta: translate('Start Pro Trial') },
+    { tier: translate('Pro'), price: '$49/mo', features: [translate('Up to 5 Teams'), translate('Advanced AI'), translate('Role Dashboards'), translate('Priority Support')], cta: translate('Start Pro Trial') },
     { tier: translate('Enterprise'), price: translate('Contact Us'), features: [translate('Unlimited Teams'), translate('Custom Integrations'), translate('Dedicated Success Manager')], cta: translate('Contact Sales') }
   ]
 
@@ -70,6 +70,15 @@ function LandingContent() {
             <button className="cta-btn" onClick={() => setShowLogin(true)}>{translate('Login')}</button>
           </div>
         </motion.div>
+      </section>
+
+      <section className="modes-edu-section">
+        <h3 className="section-title">How Scrumaster AI Works: Two Modes for Every Team</h3>
+        <div className="modes-edu-content">
+          <p><strong>Agile/Scrum Mode:</strong> Use industry-standard Agile and Scrum terminology for a classic, professional experience.</p>
+          <p><strong>Huddle Method Mode:</strong> Instantly switch to a fun, motivational overlay inspired by American football—perfect for energizing your software team, not just sports fans! All Agile terms are mapped to "Huddle" lingo, making ceremonies and metrics more engaging while keeping the process 100% software-focused.</p>
+          <p>Switch between modes anytime using the toggle in the header. No matter which you choose, all features and workflows remain the same—just the vocabulary changes!</p>
+        </div>
       </section>
 
       <section className="features-section">
@@ -128,6 +137,10 @@ function LandingContent() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <footer className="nlcs-footer">
+        <a href="https://nlcs-inc.com" target="_blank" rel="noopener noreferrer">a NLCS SaaS</a>
+      </footer>
     </div>
   )
 }
