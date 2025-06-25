@@ -6,7 +6,7 @@ import RoleDashboard from './RoleDashboard'
 import { FaRobot, FaUserShield, FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
-import { TerminologyProvider } from './terminologyContext.jsx'
+import { TerminologyProvider, useTerminology } from './terminologyContext.jsx'
 import TerminologyToggle from './TerminologyToggle.jsx'
 import { useTranslate } from './translate.jsx'
 
@@ -33,6 +33,12 @@ const COMPANY = {
 function LandingContent() {
   const translate = useTranslate()
   const [showLogin, setShowLogin] = useState(false)
+  const { mode } = useTerminology()
+
+  // Define background images for each mode
+  const bgImage = mode === TERMINOLOGY_MODES.HUDDLE
+    ? '/huddle_bkgd.png' // creative, energetic, football-inspired but abstract for software
+    : '/agile_bkgd.png' // modern, tech, agile/scrum abstract
 
   // Wrap features and pricing with translated terms
   const features = [
@@ -51,7 +57,7 @@ function LandingContent() {
   ]
 
   return (
-    <div className="landing-root">
+    <div className="landing-root" style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <header className="sticky-header" style={{ backgroundColor: '#111111' }}>
         <img src="/scrumaster_ai_logo.png" alt="Scrumaster AI Logo" className="nav-logo" />
         <nav>
@@ -81,7 +87,7 @@ function LandingContent() {
         </div>
       </section>
 
-      <section className="features-section">
+      <section className="features-section compact-section">
         <h3 className="section-title">{translate('Key Features')}</h3>
         <div className="features-grid">
           {features.map((f, i) => (
@@ -94,7 +100,7 @@ function LandingContent() {
         </div>
       </section>
 
-      <section className="pricing-section">
+      <section className="pricing-section compact-section">
         <h3 className="section-title">{translate('Pricing')}</h3>
         <div className="pricing-grid">
           {pricing.map((p, i) => (
@@ -110,7 +116,7 @@ function LandingContent() {
         </div>
       </section>
 
-      <section className="about-section">
+      <section className="about-section compact-section">
         <h3 className="section-title">{translate('About Us')}</h3>
         <motion.div className="about-content" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
           <p className="about-mission">{translate(COMPANY.mission)}</p>

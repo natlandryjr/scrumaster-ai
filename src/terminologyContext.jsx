@@ -12,7 +12,7 @@ const TERMINOLOGY_KEY = 'scrumasterai_terminology_mode';
 export function TerminologyProvider({ children }) {
     const [mode, setMode] = useState(() => {
         const saved = localStorage.getItem(TERMINOLOGY_KEY);
-        return saved === TERMINOLOGY_MODES.HUDDLE ? TERMINOLOGY_MODES.HUDDLE : TERMINOLOGY_MODES.AGILE;
+        return saved === TERMINOLOGY_MODES.AGILE ? TERMINOLOGY_MODES.AGILE : TERMINOLOGY_MODES.HUDDLE;
     });
 
     useEffect(() => {

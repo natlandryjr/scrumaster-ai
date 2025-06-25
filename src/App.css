@@ -156,6 +156,7 @@ html {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
+  position: relative;
 }
 
 .landing-root::before {
@@ -187,6 +188,23 @@ html {
   66% {
     transform: translateY(10px) rotate(-1deg);
   }
+}
+
+.landing-root::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0.55) 0%, rgba(17, 17, 17, 0.25) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.landing-root>* {
+  position: relative;
+  z-index: 2;
 }
 
 .sticky-header {
@@ -710,4 +728,11 @@ nav .nav-btn.primary {
 
 .modes-edu-content strong {
   color: #21cbf3;
+}
+
+.compact-section {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-top: 1.2rem !important;
+  padding-bottom: 1.2rem !important;
 }
