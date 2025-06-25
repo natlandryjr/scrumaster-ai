@@ -16,16 +16,19 @@ import {
     FaTimes,
     FaSignOutAlt,
     FaCog,
-    FaBell
+    FaBell,
+    FaSun,
+    FaMoon
 } from 'react-icons/fa';
 
-// Inline styles for consistent design
-const styles = {
+// Theme-aware styles
+const getStyles = (isDarkMode) => ({
     container: {
         minHeight: '100vh',
-        backgroundColor: '#f7fafd',
+        backgroundColor: isDarkMode ? '#111827' : '#f7fafd',
         fontFamily: 'Inter, Segoe UI, Arial, sans-serif',
-        display: 'flex'
+        display: 'flex',
+        color: isDarkMode ? '#f9fafb' : '#111827'
     },
     sidebar: {
         position: 'fixed',
@@ -33,12 +36,13 @@ const styles = {
         left: 0,
         height: '100vh',
         width: '280px',
-        backgroundColor: 'white',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        backgroundColor: isDarkMode ? '#1f2937' : 'white',
+        boxShadow: isDarkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         zIndex: 40,
         transform: 'translateX(-100%)',
         transition: 'transform 0.3s ease-in-out',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        borderRight: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
     },
     sidebarOpen: {
         transform: 'translateX(0)'
@@ -59,9 +63,9 @@ const styles = {
         marginLeft: '280px'
     },
     header: {
-        backgroundColor: 'white',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        borderBottom: '1px solid #e5e7eb',
+        backgroundColor: '#000000',
+        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
         padding: '1rem 2rem',
         display: 'flex',
         alignItems: 'center',
@@ -82,34 +86,35 @@ const styles = {
     },
     mobileToggle: {
         display: 'block',
-        backgroundColor: 'white',
-        border: '1px solid #e5e7eb',
+        backgroundColor: isDarkMode ? '#374151' : 'white',
+        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
         borderRadius: '0.5rem',
         padding: '0.5rem',
         cursor: 'pointer',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
+        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        color: isDarkMode ? '#f9fafb' : '#6b7280'
     },
     mobileToggleDesktop: {
         display: 'none'
     },
     card: {
-        backgroundColor: 'white',
+        backgroundColor: isDarkMode ? '#1f2937' : 'white',
         borderRadius: '0.75rem',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e5e7eb',
+        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
         padding: '1.5rem'
     },
     statCard: {
-        backgroundColor: 'white',
+        backgroundColor: isDarkMode ? '#1f2937' : 'white',
         borderRadius: '0.75rem',
-        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e5e7eb',
+        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
         padding: '1.5rem',
         transition: 'all 0.2s ease',
         cursor: 'pointer'
     },
     statCardHover: {
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        boxShadow: isDarkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.4)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         transform: 'translateY(-1px)'
     },
     button: {
@@ -125,8 +130,8 @@ const styles = {
     },
     buttonSecondary: {
         backgroundColor: 'transparent',
-        color: '#6b7280',
-        border: '1px solid #d1d5db',
+        color: isDarkMode ? '#d1d5db' : '#6b7280',
+        border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
         borderRadius: '0.5rem',
         padding: '0.5rem 1rem',
         fontWeight: '600',
@@ -145,23 +150,37 @@ const styles = {
         transition: 'background-color 0.2s ease',
         fontSize: '0.875rem'
     },
+    themeToggle: {
+        backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
+        color: isDarkMode ? '#f9fafb' : '#374151',
+        border: 'none',
+        borderRadius: '0.5rem',
+        padding: '0.5rem',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '2.5rem',
+        height: '2.5rem'
+    },
     loadingContainer: {
         minHeight: '100vh',
-        backgroundColor: '#f7fafd',
+        backgroundColor: isDarkMode ? '#111827' : '#f7fafd',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
     },
     errorContainer: {
         minHeight: '100vh',
-        backgroundColor: '#f7fafd',
+        backgroundColor: isDarkMode ? '#111827' : '#f7fafd',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
     },
     errorCard: {
-        backgroundColor: '#fef2f2',
-        border: '1px solid #fecaca',
+        backgroundColor: isDarkMode ? '#7f1d1d' : '#fef2f2',
+        border: isDarkMode ? '1px solid #991b1b' : '1px solid #fecaca',
         borderRadius: '0.5rem',
         padding: '1.5rem',
         maxWidth: '28rem'
@@ -169,7 +188,7 @@ const styles = {
     content: {
         flex: 1,
         padding: '2rem',
-        backgroundColor: '#f7fafd'
+        backgroundColor: isDarkMode ? '#111827' : '#f7fafd'
     },
     statsGrid: {
         display: 'grid',
@@ -194,19 +213,19 @@ const styles = {
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         backgroundColor: 'transparent',
-        color: '#6b7280',
+        color: isDarkMode ? '#d1d5db' : '#6b7280',
         textAlign: 'left'
     },
     navItemActive: {
-        backgroundColor: '#dbeafe',
-        color: '#1d4ed8',
-        borderRight: '2px solid #1d4ed8'
+        backgroundColor: isDarkMode ? '#1e3a8a' : '#dbeafe',
+        color: isDarkMode ? '#93c5fd' : '#1d4ed8',
+        borderRight: isDarkMode ? '2px solid #3b82f6' : '2px solid #1d4ed8'
     },
     navItemHover: {
-        backgroundColor: '#f3f4f6',
-        color: '#374151'
+        backgroundColor: isDarkMode ? '#374151' : '#f3f4f6',
+        color: isDarkMode ? '#f9fafb' : '#374151'
     }
-};
+});
 
 const RoleDashboard = ({ userId }) => {
     const [user, setUser] = useState(null);
@@ -216,6 +235,15 @@ const RoleDashboard = ({ userId }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            return saved === 'dark';
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    });
+
+    const styles = getStyles(isDarkMode);
 
     // Handle window resize
     useEffect(() => {
@@ -230,6 +258,16 @@ const RoleDashboard = ({ userId }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Handle theme changes
+    useEffect(() => {
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [isDarkMode]);
+
     // Logout function
     const handleLogout = async () => {
         try {
@@ -239,6 +277,11 @@ const RoleDashboard = ({ userId }) => {
         } catch (error) {
             console.error('Error logging out:', error.message);
         }
+    };
+
+    // Theme toggle function
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
     };
 
     useEffect(() => {
@@ -303,7 +346,7 @@ const RoleDashboard = ({ userId }) => {
             <div style={styles.loadingContainer}>
                 <div style={{ textAlign: 'center' }}>
                     <FaSpinner style={{ animation: 'spin 1s linear infinite', fontSize: '2rem', color: '#2563eb', margin: '0 auto 1rem' }} />
-                    <p style={{ color: '#6b7280' }}>Loading your dashboard...</p>
+                    <p style={{ color: isDarkMode ? '#d1d5db' : '#6b7280' }}>Loading your dashboard...</p>
                 </div>
             </div>
         );
@@ -315,9 +358,9 @@ const RoleDashboard = ({ userId }) => {
                 <div style={styles.errorCard}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <FaExclamationTriangle style={{ color: '#ef4444', fontSize: '1.25rem', marginRight: '0.75rem' }} />
-                        <h3 style={{ color: '#991b1b', fontWeight: '500' }}>Error Loading Dashboard</h3>
+                        <h3 style={{ color: isDarkMode ? '#fca5a5' : '#991b1b', fontWeight: '500' }}>Error Loading Dashboard</h3>
                     </div>
-                    <p style={{ color: '#dc2626', marginTop: '0.5rem' }}>{error}</p>
+                    <p style={{ color: isDarkMode ? '#fca5a5' : '#dc2626', marginTop: '0.5rem' }}>{error}</p>
                 </div>
             </div>
         );
@@ -327,8 +370,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={{ textAlign: 'center' }}>
-                    <FaUsers style={{ fontSize: '2rem', color: '#9ca3af', margin: '0 auto 1rem' }} />
-                    <p style={{ color: '#6b7280' }}>No user found.</p>
+                    <FaUsers style={{ fontSize: '2rem', color: isDarkMode ? '#6b7280' : '#9ca3af', margin: '0 auto 1rem' }} />
+                    <p style={{ color: isDarkMode ? '#d1d5db' : '#6b7280' }}>No user found.</p>
                 </div>
             </div>
         );
@@ -358,12 +401,12 @@ const RoleDashboard = ({ userId }) => {
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         {/* Header */}
-                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem', marginRight: '0.75rem' }} />
-                                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>ScrumMaster AI</h1>
+                                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827' }}>ScrumMaster AI</h1>
                             </div>
-                            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                            <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                 Welcome back, {user.full_name || user.email}
                             </p>
                         </div>
@@ -390,7 +433,7 @@ const RoleDashboard = ({ userId }) => {
                                                 onMouseLeave={(e) => {
                                                     if (activeTab !== item.id) {
                                                         e.target.style.backgroundColor = 'transparent';
-                                                        e.target.style.color = '#6b7280';
+                                                        e.target.style.color = styles.navItem.color;
                                                     }
                                                 }}
                                             >
@@ -404,7 +447,7 @@ const RoleDashboard = ({ userId }) => {
                         </nav>
 
                         {/* User Info & Logout */}
-                        <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                        <div style={{ padding: '1rem', borderTop: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                                 <div style={{
                                     width: '2rem',
@@ -420,10 +463,10 @@ const RoleDashboard = ({ userId }) => {
                                     </span>
                                 </div>
                                 <div style={{ marginLeft: '0.75rem', flex: 1 }}>
-                                    <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
+                                    <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
                                         {user.full_name || 'User'}
                                     </p>
-                                    <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>{primaryRole}</p>
+                                    <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{primaryRole}</p>
                                 </div>
                             </div>
                             <button
@@ -458,13 +501,13 @@ const RoleDashboard = ({ userId }) => {
                                     ...(isDesktop ? styles.mobileToggleDesktop : {})
                                 }}
                             >
-                                <FaBars style={{ color: '#6b7280' }} />
+                                <FaBars style={{ color: isDarkMode ? '#f9fafb' : '#6b7280' }} />
                             </button>
                             <div>
-                                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+                                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', margin: 0 }}>
                                     {navItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
                                 </h1>
-                                <p style={{ color: '#6b7280', margin: 0, fontSize: '0.875rem' }}>
+                                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', margin: 0, fontSize: '0.875rem' }}>
                                     Manage your team's agile process and track progress
                                 </p>
                             </div>
@@ -477,6 +520,13 @@ const RoleDashboard = ({ userId }) => {
                             <button style={styles.buttonSecondary}>
                                 <FaCog style={{ marginRight: '0.5rem' }} />
                                 Settings
+                            </button>
+                            <button
+                                onClick={toggleTheme}
+                                style={styles.themeToggle}
+                                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            >
+                                {isDarkMode ? <FaSun /> : <FaMoon />}
                             </button>
                         </div>
                     </header>
@@ -501,13 +551,13 @@ const RoleDashboard = ({ userId }) => {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
+                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
                                                     Team Velocity
                                                 </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginTop: '0.5rem' }}>
+                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
                                                     {data.velocity || 0}
                                                 </p>
-                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                     story points/sprint
                                                 </p>
                                             </div>
@@ -523,8 +573,8 @@ const RoleDashboard = ({ userId }) => {
                                                 <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem' }} />
                                             </div>
                                         </div>
-                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f3f4f6' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: '#6b7280' }}>
+                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: isDarkMode ? '1px solid #374151' : '1px solid #f3f4f6' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
                                                 <FaChartLine style={{ marginRight: '0.5rem' }} />
                                                 <span>Based on last 3 sprints</span>
                                             </div>
@@ -545,13 +595,13 @@ const RoleDashboard = ({ userId }) => {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
+                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
                                                     Active Sprints
                                                 </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginTop: '0.5rem' }}>
+                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
                                                     {data.sprints?.length || 0}
                                                 </p>
-                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                     currently running
                                                 </p>
                                             </div>
@@ -583,13 +633,13 @@ const RoleDashboard = ({ userId }) => {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
+                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
                                                     Retrospectives
                                                 </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginTop: '0.5rem' }}>
+                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
                                                     {data.retros?.length || 0}
                                                 </p>
-                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                     completed
                                                 </p>
                                             </div>
@@ -612,8 +662,8 @@ const RoleDashboard = ({ userId }) => {
                                 <div style={styles.sectionGrid}>
                                     {/* Active Sprints Section */}
                                     <div style={styles.card}>
-                                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
+                                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
+                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
                                                 <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
                                                 Active Sprints
                                             </h2>
@@ -623,24 +673,24 @@ const RoleDashboard = ({ userId }) => {
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                                     {data.sprints.map((sprint) => (
                                                         <div key={sprint.id} style={{
-                                                            border: '1px solid #e5e7eb',
+                                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
                                                             borderRadius: '0.5rem',
                                                             padding: '1rem',
                                                             transition: 'box-shadow 0.2s ease'
                                                         }}>
                                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                                 <div>
-                                                                    <h3 style={{ fontWeight: '500', color: '#111827' }}>{sprint.name}</h3>
-                                                                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                    <h3 style={{ fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>{sprint.name}</h3>
+                                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                         {sprint.start_date} - {sprint.end_date}
                                                                     </p>
                                                                 </div>
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                                                     <div style={{ textAlign: 'right' }}>
-                                                                        <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
+                                                                        <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
                                                                             {data.workItems?.filter(wi => wi.sprint_id === sprint.id).length || 0}
                                                                         </p>
-                                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>stories</p>
+                                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>stories</p>
                                                                     </div>
                                                                     <div style={{
                                                                         width: '0.75rem',
@@ -655,8 +705,8 @@ const RoleDashboard = ({ userId }) => {
                                                 </div>
                                             ) : (
                                                 <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                    <FaCalendarAlt style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: '#6b7280' }}>No active sprints</p>
+                                                    <FaCalendarAlt style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
+                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>No active sprints</p>
                                                     <button style={{
                                                         ...styles.button,
                                                         marginTop: '1rem'
@@ -670,8 +720,8 @@ const RoleDashboard = ({ userId }) => {
 
                                     {/* Retrospectives Section */}
                                     <div style={styles.card}>
-                                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827', display: 'flex', alignItems: 'center' }}>
+                                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
+                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
                                                 <FaComments style={{ marginRight: '0.75rem', color: '#9333ea' }} />
                                                 Recent Retrospectives
                                             </h2>
@@ -681,7 +731,7 @@ const RoleDashboard = ({ userId }) => {
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '24rem', overflowY: 'auto' }}>
                                                     {data.retros.map((retro) => (
                                                         <div key={retro.id} style={{
-                                                            border: '1px solid #e5e7eb',
+                                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
                                                             borderRadius: '0.5rem',
                                                             padding: '1rem',
                                                             transition: 'box-shadow 0.2s ease'
@@ -689,7 +739,7 @@ const RoleDashboard = ({ userId }) => {
                                                             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                                                 <div style={{ flex: 1 }}>
                                                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                                        <h3 style={{ fontWeight: '500', color: '#111827' }}>
+                                                                        <h3 style={{ fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
                                                                             Sprint {retro.sprint_id}
                                                                         </h3>
                                                                         <span style={{
@@ -710,20 +760,20 @@ const RoleDashboard = ({ userId }) => {
                                                                         fontSize: '0.875rem'
                                                                     }}>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Keep Doing</p>
-                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Keep Doing</p>
+                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.keepDoing || 'No items'}
                                                                             </p>
                                                                         </div>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Start Doing</p>
-                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Start Doing</p>
+                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.startDoing || 'No items'}
                                                                             </p>
                                                                         </div>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: '#374151' }}>Stop Doing</p>
-                                                                            <p style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Stop Doing</p>
+                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.stopDoing || 'No items'}
                                                                             </p>
                                                                         </div>
@@ -745,8 +795,8 @@ const RoleDashboard = ({ userId }) => {
                                                 </div>
                                             ) : (
                                                 <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                    <FaComments style={{ color: '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: '#6b7280' }}>No retrospectives yet</p>
+                                                    <FaComments style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
+                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>No retrospectives yet</p>
                                                     <button style={{
                                                         ...styles.button,
                                                         marginTop: '1rem',
@@ -766,8 +816,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'team' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Team Management</h2>
-                                    <p style={{ color: '#6b7280' }}>Team management features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Team Management</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Team management features coming soon!</p>
                                 </div>
                             </div>
                         )}
@@ -775,8 +825,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'risks' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Risk Management</h2>
-                                    <p style={{ color: '#6b7280' }}>ROAM risk tracking features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Risk Management</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>ROAM risk tracking features coming soon!</p>
                                 </div>
                             </div>
                         )}
@@ -784,8 +834,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'metrics' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Metrics & Analytics</h2>
-                                    <p style={{ color: '#6b7280' }}>Advanced metrics and analytics coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Metrics & Analytics</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Advanced metrics and analytics coming soon!</p>
                                 </div>
                             </div>
                         )}
@@ -793,8 +843,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'retrospectives' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Retrospectives</h2>
-                                    <p style={{ color: '#6b7280' }}>Retrospective management features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Retrospectives</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Retrospective management features coming soon!</p>
                                 </div>
                             </div>
                         )}
@@ -822,8 +872,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Product Owner Dashboard</h2>
-                    <p style={{ color: '#6b7280' }}>Product Owner dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Product Owner Dashboard</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Product Owner dashboard coming soon!</p>
                 </div>
             </div>
         );
@@ -832,8 +882,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Release Train Engineer Dashboard</h2>
-                    <p style={{ color: '#6b7280' }}>RTE dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Release Train Engineer Dashboard</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>RTE dashboard coming soon!</p>
                 </div>
             </div>
         );
@@ -842,8 +892,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Sponsor Dashboard</h2>
-                    <p style={{ color: '#6b7280' }}>Sponsor dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Sponsor Dashboard</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Sponsor dashboard coming soon!</p>
                 </div>
             </div>
         );
@@ -852,8 +902,8 @@ const RoleDashboard = ({ userId }) => {
     return (
         <div style={styles.loadingContainer}>
             <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '0.5rem' }}>Unknown Role</h2>
-                <p style={{ color: '#6b7280' }}>Role: {primaryRole}</p>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Unknown Role</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Role: {primaryRole}</p>
             </div>
         </div>
     );

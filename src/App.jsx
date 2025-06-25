@@ -3,7 +3,7 @@ import { supabase } from './lib/supabaseClient'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import RoleDashboard from './RoleDashboard'
-import { FaRobot, FaUserShield, FaChartLine, FaExclamationTriangle } from 'react-icons/fa'
+import { FaRobot, FaUserShield, FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
 
@@ -11,7 +11,9 @@ const FEATURES = [
   { icon: <FaRobot size={32} color="#2196f3" />, title: 'AI Planning Assistant', desc: 'Automate PI, sprint, and backlog planning with AI-driven insights.' },
   { icon: <FaUserShield size={32} color="#2196f3" />, title: 'Role-Based Dashboards', desc: 'Custom views for RTEs, ScrumMasters, Product Owners, and Sponsors.' },
   { icon: <FaExclamationTriangle size={32} color="#2196f3" />, title: 'ROAM Risk Tracking', desc: 'Visualize, manage, and mitigate program risks in real time.' },
-  { icon: <FaChartLine size={32} color="#2196f3" />, title: 'Real-Time Metrics', desc: 'Track velocity, predictability, and team health instantly.' }
+  { icon: <FaChartLine size={32} color="#2196f3" />, title: 'Real-Time Metrics', desc: 'Track velocity, predictability, and team health instantly.' },
+  { icon: <FaUsers size={32} color="#2196f3" />, title: 'Team Collaboration', desc: 'Foster team communication with integrated retrospectives and feedback tools.' },
+  { icon: <FaCalendarAlt size={32} color="#2196f3" />, title: 'Sprint Management', desc: 'Streamline sprint planning, execution, and review processes with smart automation.' }
 ]
 
 const PRICING = [
