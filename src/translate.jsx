@@ -31,7 +31,6 @@ const TERM_MAP = {
     'Development Team': 'Offense',
     'Stakeholder': 'Fan Base',
     'Sprint Demo': 'Drive Showcase',
-    'Sprint Retrospective': 'Post-Game Review',
     'Daily Scrum': 'The Huddle',
     'Sprint Planning Meeting': 'Drive Planning Meeting',
     'Sprint Review Meeting': 'Drive Review Meeting',
@@ -39,7 +38,6 @@ const TERM_MAP = {
 
     // Dashboard and UI terms
     'Dashboard': 'Command Center',
-    'Team': 'Squad',
     'Risks': 'Threats',
     'Metrics': 'Stats',
     'Retrospectives': 'Post-Game Reviews',
