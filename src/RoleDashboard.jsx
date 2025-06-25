@@ -419,21 +419,16 @@ const RoleDashboard = ({ userId }) => {
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         {/* Header */}
                         <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <img
                                     src="/scrumaster_ai_logo.png"
                                     alt="ScrumMaster AI Logo"
                                     style={{
                                         height: '2rem',
-                                        marginRight: '0.75rem',
                                         filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
                                     }}
                                 />
-                                <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827' }}>ScrumMaster AI</h1>
                             </div>
-                            <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                Welcome back, {user.full_name || user.email}
-                            </p>
                         </div>
 
                         {/* Navigation */}
@@ -484,14 +479,14 @@ const RoleDashboard = ({ userId }) => {
                                     justifyContent: 'center'
                                 }}>
                                     <span style={{ color: 'white', fontSize: '0.875rem', fontWeight: '500' }}>
-                                        {(user.full_name || user.email).charAt(0).toUpperCase()}
+                                        {primaryRole.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
                                 <div style={{ marginLeft: '0.75rem', flex: 1 }}>
                                     <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
-                                        {user.full_name || 'User'}
+                                        {primaryRole}
                                     </p>
-                                    <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{primaryRole}</p>
+                                    <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Dashboard</p>
                                 </div>
                             </div>
                             <button
@@ -529,15 +524,6 @@ const RoleDashboard = ({ userId }) => {
                                 <FaBars style={{ color: 'white' }} />
                             </button>
                             <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
-                                <img
-                                    src="/scrumaster_ai_logo.png"
-                                    alt="ScrumMaster AI Logo"
-                                    style={{
-                                        height: '2rem',
-                                        marginRight: '0.75rem',
-                                        filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))'
-                                    }}
-                                />
                                 <div>
                                     <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>
                                         {navItems.find(item => item.id === activeTab)?.label || 'Dashboard'}

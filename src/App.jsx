@@ -57,7 +57,7 @@ function LandingContent() {
   ]
 
   return (
-    <div className="landing-root" style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="landing-root">
       <header className="sticky-header" style={{ backgroundColor: '#111111' }}>
         <img src="/scrumaster_ai_logo.png" alt="Scrumaster AI Logo" className="nav-logo" />
         <nav>
@@ -67,8 +67,23 @@ function LandingContent() {
         </nav>
       </header>
 
-      <section className="hero-section">
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+      <section className="hero-section" style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          zIndex: 1
+        }}></div>
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="hero-title">{translate('AI-Powered Agile for SAFe, Scrum & Hybrid Teams')}</h1>
           <h2 className="hero-sub">{translate('Built for RTEs, ScrumMasters, Product Owners & Sponsors')}</h2>
           <div className="hero-cta">
