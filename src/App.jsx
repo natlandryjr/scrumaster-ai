@@ -8,47 +8,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
 
 const FEATURES = [
-  {
-    icon: <FaRobot size={32} color="#2196f3" />,
-    title: 'AI Planning Assistant',
-    desc: 'Automate PI, sprint, and backlog planning with AI-driven insights.'
-  },
-  {
-    icon: <FaUserShield size={32} color="#2196f3" />,
-    title: 'Role-Based Dashboards',
-    desc: 'Custom views for RTEs, ScrumMasters, Product Owners, and Sponsors.'
-  },
-  {
-    icon: <FaExclamationTriangle size={32} color="#2196f3" />,
-    title: 'ROAM Risk Tracking',
-    desc: 'Visualize, manage, and mitigate program risks in real time.'
-  },
-  {
-    icon: <FaChartLine size={32} color="#2196f3" />,
-    title: 'Real-Time Metrics',
-    desc: 'Track velocity, predictability, and team health instantly.'
-  }
+  { icon: <FaRobot size={32} color="#2196f3" />, title: 'AI Planning Assistant', desc: 'Automate PI, sprint, and backlog planning with AI-driven insights.' },
+  { icon: <FaUserShield size={32} color="#2196f3" />, title: 'Role-Based Dashboards', desc: 'Custom views for RTEs, ScrumMasters, Product Owners, and Sponsors.' },
+  { icon: <FaExclamationTriangle size={32} color="#2196f3" />, title: 'ROAM Risk Tracking', desc: 'Visualize, manage, and mitigate program risks in real time.' },
+  { icon: <FaChartLine size={32} color="#2196f3" />, title: 'Real-Time Metrics', desc: 'Track velocity, predictability, and team health instantly.' }
 ]
 
 const PRICING = [
-  {
-    tier: 'Starter',
-    price: 'Free',
-    features: ['1 Team', 'Basic AI Planning', 'Community Support'],
-    cta: 'Get Started'
-  },
-  {
-    tier: 'Pro',
-    price: '$12/mo',
-    features: ['Up to 5 Teams', 'Advanced AI', 'Role Dashboards', 'Priority Support'],
-    cta: 'Start Pro Trial'
-  },
-  {
-    tier: 'Enterprise',
-    price: 'Contact Us',
-    features: ['Unlimited Teams', 'Custom Integrations', 'Dedicated Success Manager'],
-    cta: 'Contact Sales'
-  }
+  { tier: 'Starter', price: 'Free', features: ['1 Team', 'Basic AI Planning', 'Community Support'], cta: 'Get Started' },
+  { tier: 'Pro', price: '$12/mo', features: ['Up to 5 Teams', 'Advanced AI', 'Role Dashboards', 'Priority Support'], cta: 'Start Pro Trial' },
+  { tier: 'Enterprise', price: 'Contact Us', features: ['Unlimited Teams', 'Custom Integrations', 'Dedicated Success Manager'], cta: 'Contact Sales' }
 ]
 
 const COMPANY = {
@@ -62,33 +31,52 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const getUserProfile = async () => {
+    const getOrCreateUserProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      const authUser = session?.user
 
-      if (session?.user) {
+      if (authUser) {
         const { data: profile, error } = await supabase
           .from('users')
           .select('*')
-          .eq('auth_id', session.user.id)
+          .eq('auth_id', authUser.id)
           .maybeSingle()
 
         if (error) {
           console.error('Error fetching user profile:', error.message)
-        } else if (profile) {
+        }
+
+        if (profile) {
           setUser(profile)
         } else {
-          console.warn('No user record found for this auth ID.')
+          // Auto-create user if not found
+          const { data: insertedUser, error: insertError } = await supabase
+            .from('users')
+            .insert({
+              auth_id: authUser.id,
+              email: authUser.email,
+              full_name: authUser.user_metadata?.full_name || authUser.email,
+              roles: ['ScrumMaster'] // default role
+            })
+            .select()
+            .single()
+
+          if (insertError) {
+            console.error('Error creating user profile:', insertError.message)
+          } else {
+            setUser(insertedUser)
+          }
         }
       }
 
       setLoading(false)
     }
 
-    getUserProfile()
+    getOrCreateUserProfile()
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        getUserProfile()
+        getOrCreateUserProfile()
       } else {
         setUser(null)
       }
