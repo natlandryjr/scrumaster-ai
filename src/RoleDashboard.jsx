@@ -16,9 +16,13 @@ const RoleDashboard = ({ userId }) => {
                 const { data: userData, error: userError } = await supabase.from('users').select('*').eq('id', userId).single();
                 if (userError) throw userError;
                 setUser(userData);
+
+                // Get the primary role from the roles array
+                const primaryRole = userData.roles && userData.roles.length > 0 ? userData.roles[0] : 'ScrumMaster';
+
                 // Fetch data based on role
                 let dashboardData = {};
-                if (userData.role === 'ScrumMaster') {
+                if (primaryRole === 'ScrumMaster') {
                     // Team velocity, active sprints, retrospectives
                     const { data: sprints } = await supabase.from('sprints').select('*').eq('team_id', userData.team_id);
                     const { data: workItems } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id);
@@ -31,19 +35,19 @@ const RoleDashboard = ({ userId }) => {
                         }, 0) / sprints.length).toFixed(1)
                         : 0;
                     dashboardData = { velocity, sprints, retros };
-                } else if (userData.role === 'ProductOwner') {
+                } else if (primaryRole === 'ProductOwner') {
                     // Backlog items, priority features, recent completions
                     const { data: backlog } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id).eq('status', 'Backlog');
                     const { data: features } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id).eq('type', 'Feature').order('priority', { ascending: true });
                     const { data: recent } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id).eq('status', 'Done').order('updated_at', { ascending: false }).limit(5);
                     dashboardData = { backlog, features, recent };
-                } else if (userData.role === 'RTE') {
+                } else if (primaryRole === 'RTE') {
                     // PI dashboard, ROAM risks, ART progress
                     const { data: pis } = await supabase.from('program_increments').select('*');
                     const { data: risks } = await supabase.from('risks').select('*');
                     const { data: arts } = await supabase.from('release_trains').select('*');
                     dashboardData = { pis, risks, arts };
-                } else if (userData.role === 'Sponsor') {
+                } else if (primaryRole === 'Sponsor') {
                     // Strategic themes, objectives, key PI metrics
                     const { data: themes } = await supabase.from('strategic_themes').select('*');
                     const { data: objectives } = await supabase.from('objectives').select('*');
@@ -64,8 +68,11 @@ const RoleDashboard = ({ userId }) => {
     if (error) return <div>Error: {error}</div>;
     if (!user) return <div>No user found.</div>;
 
+    // Get the primary role from the roles array
+    const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'ScrumMaster';
+
     // Render dashboards by role
-    if (user.role === 'ScrumMaster') {
+    if (primaryRole === 'ScrumMaster') {
         return (
             <div>
                 <h2>Scrum Master Dashboard</h2>
@@ -89,7 +96,7 @@ const RoleDashboard = ({ userId }) => {
             </div>
         );
     }
-    if (user.role === 'ProductOwner') {
+    if (primaryRole === 'ProductOwner') {
         return (
             <div>
                 <h2>Product Owner Dashboard</h2>
@@ -117,7 +124,7 @@ const RoleDashboard = ({ userId }) => {
             </div>
         );
     }
-    if (user.role === 'RTE') {
+    if (primaryRole === 'RTE') {
         return (
             <div>
                 <h2>Release Train Engineer Dashboard</h2>
@@ -145,7 +152,7 @@ const RoleDashboard = ({ userId }) => {
             </div>
         );
     }
-    if (user.role === 'Sponsor') {
+    if (primaryRole === 'Sponsor') {
         return (
             <div>
                 <h2>Sponsor Dashboard</h2>
@@ -173,7 +180,7 @@ const RoleDashboard = ({ userId }) => {
             </div>
         );
     }
-    return <div>Unknown role.</div>;
+    return <div>Unknown role: {primaryRole}</div>;
 };
 
 export default RoleDashboard; 
