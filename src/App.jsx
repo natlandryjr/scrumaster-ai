@@ -6,7 +6,7 @@ import RoleDashboard from './RoleDashboard'
 import { FaRobot, FaUserShield, FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
-import { TerminologyProvider, useTerminology } from './terminologyContext.jsx'
+import { TerminologyProvider, useTerminology, TERMINOLOGY_MODES } from './terminologyContext.jsx'
 import TerminologyToggle from './TerminologyToggle.jsx'
 import { useTranslate } from './translate.jsx'
 
