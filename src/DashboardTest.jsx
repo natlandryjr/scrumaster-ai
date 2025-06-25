@@ -17,6 +17,7 @@ import {
     FaCog,
     FaBell
 } from 'react-icons/fa';
+import { useTranslate } from './translate';
 
 // Same styles as RoleDashboard
 const styles = {
@@ -186,6 +187,7 @@ const DashboardTest = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+    const translate = useTranslate();
 
     // Mock data for testing
     const mockData = {
@@ -207,11 +209,11 @@ const DashboardTest = () => {
 
     // Navigation items
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt },
-        { id: 'team', label: 'Team', icon: FaUsers },
-        { id: 'risks', label: 'Risks', icon: FaExclamationTriangle },
-        { id: 'metrics', label: 'Metrics', icon: FaChartLine },
-        { id: 'retrospectives', label: 'Retrospectives', icon: FaComments }
+        { id: 'dashboard', label: translate('Dashboard'), icon: FaTachometerAlt },
+        { id: 'team', label: translate('Team'), icon: FaUsers },
+        { id: 'risks', label: translate('Risks'), icon: FaExclamationTriangle },
+        { id: 'metrics', label: translate('Metrics'), icon: FaChartLine },
+        { id: 'retrospectives', label: translate('Retrospectives'), icon: FaComments }
     ];
 
     return (

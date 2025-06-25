@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabaseClient';
+import { useTranslate } from './translate';
 
 const fetchAISuggestion = async ({ keepDoing, startDoing, stopDoing }) => {
     // Placeholder: Replace with your Supabase Edge Function or OpenAI API call
@@ -23,6 +24,7 @@ const RetroBoard = () => {
     const [newRetro, setNewRetro] = useState({ team_id: '', sprint_id: '', keepDoing: '', startDoing: '', stopDoing: '', ai_insights: '' });
     const [aiSuggestions, setAiSuggestions] = useState({}); // key: teamId-sprintId -> suggestion
     const [aiLoading, setAiLoading] = useState({}); // key: teamId-sprintId -> bool
+    const translate = useTranslate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -112,7 +114,7 @@ const RetroBoard = () => {
     return (
         <div>
             <h2>Retro Board</h2>
-            <button onClick={openModal} style={{ marginBottom: '1rem' }}>Add Retrospective</button>
+            <button onClick={openModal} style={{ marginBottom: '1rem' }}>{translate('Add Retrospective')}</button>
             {teams.map(team => (
                 <div key={team.id} style={{ marginBottom: '2rem' }}>
                     <h3>{team.name}</h3>
@@ -130,10 +132,10 @@ const RetroBoard = () => {
                                     </div>
                                     {expanded[key] && retro && (
                                         <div style={{ marginLeft: '2rem', marginTop: '0.5rem', border: '1px solid #ccc', padding: '1rem' }}>
-                                            <div><strong>Keep Doing:</strong> {retro.keepDoing}</div>
-                                            <div><strong>Start Doing:</strong> {retro.startDoing}</div>
-                                            <div><strong>Stop Doing:</strong> {retro.stopDoing}</div>
-                                            <div><strong>AI Insights:</strong> {retro.ai_insights}</div>
+                                            <div><strong>{translate('Keep Doing')}:</strong> {retro.keepDoing}</div>
+                                            <div><strong>{translate('Start Doing')}:</strong> {retro.startDoing}</div>
+                                            <div><strong>{translate('Stop Doing')}:</strong> {retro.stopDoing}</div>
+                                            <div><strong>{translate('AI Insights')}:</strong> {retro.ai_insights}</div>
                                             <button
                                                 style={{ marginTop: '1rem' }}
                                                 onClick={() => handleGetAISuggestion(retro, key)}
@@ -143,13 +145,13 @@ const RetroBoard = () => {
                                             </button>
                                             {aiSuggestions[key] && (
                                                 <div style={{ marginTop: '0.5rem', color: '#2a7' }}>
-                                                    <strong>AI Suggestion:</strong> {aiSuggestions[key]}
+                                                    <strong>{translate('AI Suggestion')}:</strong> {aiSuggestions[key]}
                                                 </div>
                                             )}
                                         </div>
                                     )}
                                     {expanded[key] && !retro && (
-                                        <div style={{ marginLeft: '2rem', marginTop: '0.5rem', color: '#888' }}>No feedback for this sprint.</div>
+                                        <div style={{ marginLeft: '2rem', marginTop: '0.5rem', color: '#888' }}>{translate('No feedback for this sprint.')}</div>
                                     )}
                                 </li>
                             );
@@ -160,45 +162,45 @@ const RetroBoard = () => {
             {modalOpen && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', minWidth: '320px' }}>
-                        <h3>Add Retrospective</h3>
+                        <h3>{translate('Add Retrospective')}</h3>
                         <form onSubmit={handleAddRetro}>
                             <div>
-                                <label>Team:</label>
+                                <label>{translate('Team')}:</label>
                                 <select name="team_id" value={newRetro.team_id} onChange={handleNewRetroChange} required>
-                                    <option value="">Select team</option>
+                                    <option value="">{translate('Select team')}</option>
                                     {teams.map(team => (
                                         <option key={team.id} value={team.id}>{team.name}</option>
                                     ))}
                                 </select>
                             </div>
                             <div>
-                                <label>Sprint:</label>
+                                <label>{translate('Sprint')}:</label>
                                 <select name="sprint_id" value={newRetro.sprint_id} onChange={handleNewRetroChange} required>
-                                    <option value="">Select sprint</option>
+                                    <option value="">{translate('Select sprint')}</option>
                                     {sprints.map(sprint => (
                                         <option key={sprint.id} value={sprint.id}>{sprint.name}</option>
                                     ))}
                                 </select>
                             </div>
                             <div>
-                                <label>Keep Doing:</label>
+                                <label>{translate('Keep Doing')}:</label>
                                 <textarea name="keepDoing" value={newRetro.keepDoing} onChange={handleNewRetroChange} required />
                             </div>
                             <div>
-                                <label>Start Doing:</label>
+                                <label>{translate('Start Doing')}:</label>
                                 <textarea name="startDoing" value={newRetro.startDoing} onChange={handleNewRetroChange} required />
                             </div>
                             <div>
-                                <label>Stop Doing:</label>
+                                <label>{translate('Stop Doing')}:</label>
                                 <textarea name="stopDoing" value={newRetro.stopDoing} onChange={handleNewRetroChange} required />
                             </div>
                             <div>
-                                <label>AI Insights:</label>
+                                <label>{translate('AI Insights')}:</label>
                                 <textarea name="ai_insights" value={newRetro.ai_insights} onChange={handleNewRetroChange} />
                             </div>
                             <div style={{ marginTop: '1rem' }}>
-                                <button type="submit">Add</button>
-                                <button type="button" onClick={closeModal} style={{ marginLeft: '1rem' }}>Cancel</button>
+                                <button type="submit">{translate('Add')}</button>
+                                <button type="button" onClick={closeModal} style={{ marginLeft: '1rem' }}>{translate('Cancel')}</button>
                             </div>
                         </form>
                     </div>

@@ -20,6 +20,7 @@ import {
     FaSun,
     FaMoon
 } from 'react-icons/fa';
+import { useTranslate } from './translate';
 
 // Theme-aware styles
 const getStyles = (isDarkMode) => ({
@@ -98,24 +99,39 @@ const getStyles = (isDarkMode) => ({
         display: 'none'
     },
     card: {
-        backgroundColor: isDarkMode ? '#1f2937' : 'white',
-        borderRadius: '0.75rem',
-        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-        padding: '1.5rem'
-    },
-    statCard: {
-        backgroundColor: isDarkMode ? '#1f2937' : 'white',
-        borderRadius: '0.75rem',
-        boxShadow: isDarkMode ? '0 1px 3px 0 rgba(0, 0, 0, 0.3)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        background: isDarkMode
+            ? 'linear-gradient(135deg, #1f2937 0%, #374151 100%)'
+            : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        borderRadius: '1rem',
+        boxShadow: isDarkMode
+            ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
+            : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
         padding: '1.5rem',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer'
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease'
+    },
+    statCard: {
+        background: isDarkMode
+            ? 'linear-gradient(135deg, #1f2937 0%, #374151 100%)'
+            : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        borderRadius: '1rem',
+        boxShadow: isDarkMode
+            ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
+            : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+        padding: '1.5rem',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden'
     },
     statCardHover: {
-        boxShadow: isDarkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.4)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        transform: 'translateY(-1px)'
+        boxShadow: isDarkMode
+            ? '0 10px 25px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3)'
+            : '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        transform: 'translateY(-4px) scale(1.02)'
     },
     button: {
         backgroundColor: '#2563eb',
@@ -242,6 +258,7 @@ const RoleDashboard = ({ userId }) => {
         }
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     });
+    const translate = useTranslate();
 
     const styles = getStyles(isDarkMode);
 
@@ -382,11 +399,11 @@ const RoleDashboard = ({ userId }) => {
 
     // Navigation items
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt },
-        { id: 'team', label: 'Team', icon: FaUsers },
-        { id: 'risks', label: 'Risks', icon: FaExclamationTriangle },
-        { id: 'metrics', label: 'Metrics', icon: FaChartLine },
-        { id: 'retrospectives', label: 'Retrospectives', icon: FaComments }
+        { id: 'dashboard', label: translate('Dashboard'), icon: FaTachometerAlt },
+        { id: 'team', label: translate('Team'), icon: FaUsers },
+        { id: 'risks', label: translate('Risks'), icon: FaExclamationTriangle },
+        { id: 'metrics', label: translate('Metrics'), icon: FaChartLine },
+        { id: 'retrospectives', label: translate('Retrospectives'), icon: FaComments }
     ];
 
     // Render Scrum Master Dashboard
@@ -403,7 +420,15 @@ const RoleDashboard = ({ userId }) => {
                         {/* Header */}
                         <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem', marginRight: '0.75rem' }} />
+                                <img
+                                    src="/scrumaster_ai_logo.png"
+                                    alt="ScrumMaster AI Logo"
+                                    style={{
+                                        height: '2rem',
+                                        marginRight: '0.75rem',
+                                        filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+                                    }}
+                                />
                                 <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827' }}>ScrumMaster AI</h1>
                             </div>
                             <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
@@ -501,29 +526,58 @@ const RoleDashboard = ({ userId }) => {
                                     ...(isDesktop ? styles.mobileToggleDesktop : {})
                                 }}
                             >
-                                <FaBars style={{ color: isDarkMode ? '#f9fafb' : '#6b7280' }} />
+                                <FaBars style={{ color: 'white' }} />
                             </button>
-                            <div>
-                                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', margin: 0 }}>
-                                    {navItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
-                                </h1>
-                                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', margin: 0, fontSize: '0.875rem' }}>
-                                    Manage your team's agile process and track progress
-                                </p>
+                            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
+                                <img
+                                    src="/scrumaster_ai_logo.png"
+                                    alt="ScrumMaster AI Logo"
+                                    style={{
+                                        height: '2rem',
+                                        marginRight: '0.75rem',
+                                        filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))'
+                                    }}
+                                />
+                                <div>
+                                    <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white', margin: 0 }}>
+                                        {navItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
+                                    </h1>
+                                    <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0, fontSize: '0.875rem' }}>
+                                        Manage your team's agile process and track progress
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <div style={styles.headerRight}>
-                            <button style={styles.buttonSecondary}>
+                            <button style={{
+                                ...styles.buttonSecondary,
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                color: 'white',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                backdropFilter: 'blur(10px)'
+                            }}>
                                 <FaBell style={{ marginRight: '0.5rem' }} />
                                 Notifications
                             </button>
-                            <button style={styles.buttonSecondary}>
+                            <button style={{
+                                ...styles.buttonSecondary,
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                color: 'white',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                backdropFilter: 'blur(10px)'
+                            }}>
                                 <FaCog style={{ marginRight: '0.5rem' }} />
                                 Settings
                             </button>
                             <button
                                 onClick={toggleTheme}
-                                style={styles.themeToggle}
+                                style={{
+                                    ...styles.themeToggle,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    color: 'white',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    backdropFilter: 'blur(10px)'
+                                }}
                                 title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                             >
                                 {isDarkMode ? <FaSun /> : <FaMoon />}
@@ -540,13 +594,16 @@ const RoleDashboard = ({ userId }) => {
                                     {/* Team Velocity Card */}
                                     <div
                                         style={styles.statCard}
+                                        className="premium-card fade-in"
                                         onMouseEnter={(e) => {
                                             e.target.style.boxShadow = styles.statCardHover.boxShadow;
                                             e.target.style.transform = styles.statCardHover.transform;
+                                            e.target.classList.add('glow');
                                         }}
                                         onMouseLeave={(e) => {
                                             e.target.style.boxShadow = styles.statCard.boxShadow;
                                             e.target.style.transform = 'none';
+                                            e.target.classList.remove('glow');
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -554,7 +611,7 @@ const RoleDashboard = ({ userId }) => {
                                                 <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
                                                     Team Velocity
                                                 </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
+                                                <p className="gradient-text" style={{ fontSize: '1.875rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
                                                     {data.velocity || 0}
                                                 </p>
                                                 <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
@@ -564,12 +621,13 @@ const RoleDashboard = ({ userId }) => {
                                             <div style={{
                                                 width: '4rem',
                                                 height: '4rem',
-                                                backgroundColor: '#dbeafe',
+                                                background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
                                                 borderRadius: '50%',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
+                                                justifyContent: 'center',
+                                                boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)'
+                                            }} className="float">
                                                 <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem' }} />
                                             </div>
                                         </div>
@@ -661,11 +719,11 @@ const RoleDashboard = ({ userId }) => {
                                 {/* Content Sections */}
                                 <div style={styles.sectionGrid}>
                                     {/* Active Sprints Section */}
-                                    <div style={styles.card}>
+                                    <div style={styles.card} className="premium-card fade-in">
                                         <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                                             <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
                                                 <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
-                                                Active Sprints
+                                                {translate('Active Sprints')}
                                             </h2>
                                         </div>
                                         <div style={{ padding: '1.5rem' }}>
@@ -690,7 +748,7 @@ const RoleDashboard = ({ userId }) => {
                                                                         <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
                                                                             {data.workItems?.filter(wi => wi.sprint_id === sprint.id).length || 0}
                                                                         </p>
-                                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>stories</p>
+                                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('stories')}</p>
                                                                     </div>
                                                                     <div style={{
                                                                         width: '0.75rem',
@@ -706,12 +764,12 @@ const RoleDashboard = ({ userId }) => {
                                             ) : (
                                                 <div style={{ textAlign: 'center', padding: '2rem' }}>
                                                     <FaCalendarAlt style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>No active sprints</p>
+                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('No active sprints')}</p>
                                                     <button style={{
                                                         ...styles.button,
                                                         marginTop: '1rem'
-                                                    }}>
-                                                        Create Sprint
+                                                    }} className="premium-button">
+                                                        {translate('Create Sprint')}
                                                     </button>
                                                 </div>
                                             )}
@@ -719,11 +777,11 @@ const RoleDashboard = ({ userId }) => {
                                     </div>
 
                                     {/* Retrospectives Section */}
-                                    <div style={styles.card}>
+                                    <div style={styles.card} className="premium-card fade-in">
                                         <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                                             <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
                                                 <FaComments style={{ marginRight: '0.75rem', color: '#9333ea' }} />
-                                                Recent Retrospectives
+                                                {translate('Recent Retrospectives')}
                                             </h2>
                                         </div>
                                         <div style={{ padding: '1.5rem' }}>
@@ -740,7 +798,7 @@ const RoleDashboard = ({ userId }) => {
                                                                 <div style={{ flex: 1 }}>
                                                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
                                                                         <h3 style={{ fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
-                                                                            Sprint {retro.sprint_id}
+                                                                            {translate('Sprint')} {retro.sprint_id}
                                                                         </h3>
                                                                         <span style={{
                                                                             marginLeft: '0.5rem',
@@ -760,19 +818,19 @@ const RoleDashboard = ({ userId }) => {
                                                                         fontSize: '0.875rem'
                                                                     }}>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Keep Doing</p>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Keep Doing')}</p>
                                                                             <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.keepDoing || 'No items'}
                                                                             </p>
                                                                         </div>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Start Doing</p>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Start Doing')}</p>
                                                                             <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.startDoing || 'No items'}
                                                                             </p>
                                                                         </div>
                                                                         <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>Stop Doing</p>
+                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Stop Doing')}</p>
                                                                             <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
                                                                                 {retro.stopDoing || 'No items'}
                                                                             </p>
@@ -796,13 +854,13 @@ const RoleDashboard = ({ userId }) => {
                                             ) : (
                                                 <div style={{ textAlign: 'center', padding: '2rem' }}>
                                                     <FaComments style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>No retrospectives yet</p>
+                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('No retrospectives yet')}</p>
                                                     <button style={{
                                                         ...styles.button,
                                                         marginTop: '1rem',
                                                         backgroundColor: '#9333ea'
                                                     }}>
-                                                        Schedule Retrospective
+                                                        {translate('Schedule Retrospective')}
                                                     </button>
                                                 </div>
                                             )}
@@ -816,8 +874,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'team' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Team Management</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Team management features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Team Management')}</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Team management features coming soon!')}</p>
                                 </div>
                             </div>
                         )}
@@ -825,8 +883,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'risks' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Risk Management</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>ROAM risk tracking features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Risk Management')}</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('ROAM risk tracking features coming soon!')}</p>
                                 </div>
                             </div>
                         )}
@@ -834,8 +892,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'metrics' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Metrics & Analytics</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Advanced metrics and analytics coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Metrics & Analytics')}</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Advanced metrics and analytics coming soon!')}</p>
                                 </div>
                             </div>
                         )}
@@ -843,8 +901,8 @@ const RoleDashboard = ({ userId }) => {
                         {activeTab === 'retrospectives' && (
                             <div style={styles.card}>
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Retrospectives</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Retrospective management features coming soon!</p>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Retrospectives')}</h2>
+                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Retrospective management features coming soon!')}</p>
                                 </div>
                             </div>
                         )}
@@ -872,8 +930,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Product Owner Dashboard</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Product Owner dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Product Owner Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Product Owner dashboard coming soon!')}</p>
                 </div>
             </div>
         );
@@ -882,8 +940,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Release Train Engineer Dashboard</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>RTE dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Release Train Engineer Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('RTE dashboard coming soon!')}</p>
                 </div>
             </div>
         );
@@ -892,8 +950,8 @@ const RoleDashboard = ({ userId }) => {
         return (
             <div style={styles.loadingContainer}>
                 <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Sponsor Dashboard</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Sponsor dashboard coming soon!</p>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Sponsor Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Sponsor dashboard coming soon!')}</p>
                 </div>
             </div>
         );
@@ -902,8 +960,8 @@ const RoleDashboard = ({ userId }) => {
     return (
         <div style={styles.loadingContainer}>
             <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>Unknown Role</h2>
-                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Role: {primaryRole}</p>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Unknown Role')}</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Role:')} {primaryRole}</p>
             </div>
         </div>
     );
