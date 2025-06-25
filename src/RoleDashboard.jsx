@@ -18,7 +18,10 @@ import {
     FaCog,
     FaBell,
     FaSun,
-    FaMoon
+    FaMoon,
+    FaList,
+    FaFilter,
+    FaPlus
 } from 'react-icons/fa';
 import { useTranslate } from './translate.jsx';
 
@@ -399,11 +402,13 @@ const RoleDashboard = ({ userId }) => {
 
     // Navigation items
     const navItems = [
-        { id: 'dashboard', label: translate('Dashboard'), icon: FaTachometerAlt },
+        { id: 'dashboard', label: translate('Dashboard'), icon: FaChartLine },
+        { id: 'backlog', label: translate('Backlog'), icon: FaList },
+        { id: 'sprints', label: translate('Sprints'), icon: FaCalendarAlt },
         { id: 'team', label: translate('Team'), icon: FaUsers },
+        { id: 'retrospectives', label: translate('Retrospectives'), icon: FaComments },
         { id: 'risks', label: translate('Risks'), icon: FaExclamationTriangle },
-        { id: 'metrics', label: translate('Metrics'), icon: FaChartLine },
-        { id: 'retrospectives', label: translate('Retrospectives'), icon: FaComments }
+        { id: 'metrics', label: translate('Metrics'), icon: FaChartLine }
     ];
 
     // Render Scrum Master Dashboard
@@ -418,7 +423,11 @@ const RoleDashboard = ({ userId }) => {
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         {/* Header */}
-                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
+                        <div style={{
+                            padding: '1.5rem',
+                            borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                            backgroundColor: '#000000'
+                        }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <img
                                     src="/scrumaster_ai_logo.png"
@@ -575,281 +584,748 @@ const RoleDashboard = ({ userId }) => {
                     <div style={styles.content}>
                         {activeTab === 'dashboard' && (
                             <div>
-                                {/* Stats Cards */}
-                                <div style={styles.statsGrid}>
-                                    {/* Team Velocity Card */}
-                                    <div
-                                        style={styles.statCard}
-                                        className="premium-card fade-in"
-                                        onMouseEnter={(e) => {
-                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
-                                            e.target.style.transform = styles.statCardHover.transform;
-                                            e.target.classList.add('glow');
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.boxShadow = styles.statCard.boxShadow;
-                                            e.target.style.transform = 'none';
-                                            e.target.classList.remove('glow');
-                                        }}
-                                    >
+                                {/* Current Sprint Kanban Board */}
+                                <div style={styles.card} className="premium-card fade-in">
+                                    <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-                                                    Team Velocity
-                                                </p>
-                                                <p className="gradient-text" style={{ fontSize: '1.875rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
-                                                    {data.velocity || 0}
-                                                </p>
-                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                    story points/sprint
-                                                </p>
-                                            </div>
-                                            <div style={{
-                                                width: '4rem',
-                                                height: '4rem',
-                                                background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                                borderRadius: '50%',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)'
-                                            }} className="float">
-                                                <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem' }} />
-                                            </div>
-                                        </div>
-                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: isDarkMode ? '1px solid #374151' : '1px solid #f3f4f6' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-                                                <FaChartLine style={{ marginRight: '0.5rem' }} />
-                                                <span>Based on last 3 sprints</span>
+                                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
+                                                <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
+                                                {translate('Current Sprint Kanban Board')}
+                                            </h2>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button style={{
+                                                    ...styles.buttonSecondary,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    <FaEye style={{ marginRight: '0.5rem' }} />
+                                                    {translate('Sprint Details')}
+                                                </button>
+                                                <button style={{
+                                                    ...styles.button,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    <FaPlus style={{ marginRight: '0.5rem' }} />
+                                                    {translate('Add Story')}
+                                                </button>
                                             </div>
                                         </div>
+                                        <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                                            Sprint 3: User Authentication & Dashboard Features (Dec 1-15, 2024)
+                                        </p>
                                     </div>
 
-                                    {/* Active Sprints Count */}
-                                    <div
-                                        style={styles.statCard}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
-                                            e.target.style.transform = styles.statCardHover.transform;
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.boxShadow = styles.statCard.boxShadow;
-                                            e.target.style.transform = 'none';
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-                                                    Active Sprints
-                                                </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
-                                                    {data.sprints?.length || 0}
-                                                </p>
-                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                    currently running
-                                                </p>
-                                            </div>
+                                    {/* Kanban Board */}
+                                    <div style={{ padding: '1.5rem' }}>
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                                            gap: '1rem',
+                                            minHeight: '400px'
+                                        }}>
+                                            {/* To Do Column */}
                                             <div style={{
-                                                width: '4rem',
-                                                height: '4rem',
-                                                backgroundColor: '#dcfce7',
-                                                borderRadius: '50%',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
+                                                backgroundColor: isDarkMode ? '#1f2937' : '#f8fafc',
+                                                borderRadius: '0.5rem',
+                                                padding: '1rem',
+                                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
                                             }}>
-                                                <FaClock style={{ color: '#16a34a', fontSize: '1.5rem' }} />
-                                            </div>
-                                        </div>
-                                    </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                        {translate('To Do')} (3)
+                                                    </h3>
+                                                    <div style={{
+                                                        backgroundColor: '#f3f4f6',
+                                                        color: '#6b7280',
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '0.25rem',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: '500'
+                                                    }}>
+                                                        8 pts
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                    {/* Story Cards */}
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-123: Implement OAuth Login
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                5 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Add Google and GitHub OAuth authentication options
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#3b82f6',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                JD
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                John Doe
+                                                            </span>
+                                                        </div>
+                                                    </div>
 
-                                    {/* Retrospectives Count */}
-                                    <div
-                                        style={styles.statCard}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.boxShadow = styles.statCardHover.boxShadow;
-                                            e.target.style.transform = styles.statCardHover.transform;
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.boxShadow = styles.statCard.boxShadow;
-                                            e.target.style.transform = 'none';
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <div>
-                                                <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-                                                    Retrospectives
-                                                </p>
-                                                <p style={{ fontSize: '1.875rem', fontWeight: 'bold', color: isDarkMode ? '#f9fafb' : '#111827', marginTop: '0.5rem' }}>
-                                                    {data.retros?.length || 0}
-                                                </p>
-                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                    completed
-                                                </p>
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-124: Dashboard Analytics
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                3 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Add velocity and burndown charts to dashboard
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#10b981',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                AS
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                Alice Smith
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            {/* In Progress Column */}
                                             <div style={{
-                                                width: '4rem',
-                                                height: '4rem',
-                                                backgroundColor: '#f3e8ff',
-                                                borderRadius: '50%',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
+                                                backgroundColor: isDarkMode ? '#1f2937' : '#f8fafc',
+                                                borderRadius: '0.5rem',
+                                                padding: '1rem',
+                                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
                                             }}>
-                                                <FaComments style={{ color: '#9333ea', fontSize: '1.5rem' }} />
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                        {translate('In Progress')} (2)
+                                                    </h3>
+                                                    <div style={{
+                                                        backgroundColor: '#dbeafe',
+                                                        color: '#1e40af',
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '0.25rem',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: '500'
+                                                    }}>
+                                                        13 pts
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        borderLeft: '4px solid #3b82f6'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-121: User Profile Management
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                8 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Create user profile pages with edit functionality
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#8b5cf6',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                MJ
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                Mike Johnson
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        borderLeft: '4px solid #3b82f6'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-122: Team Collaboration
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                5 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Add team chat and collaboration features
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#f59e0b',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                SB
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                Sarah Brown
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Done Column */}
+                                            <div style={{
+                                                backgroundColor: isDarkMode ? '#1f2937' : '#f8fafc',
+                                                borderRadius: '0.5rem',
+                                                padding: '1rem',
+                                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                        {translate('Done')} (4)
+                                                    </h3>
+                                                    <div style={{
+                                                        backgroundColor: '#dcfce7',
+                                                        color: '#166534',
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '0.25rem',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: '500'
+                                                    }}>
+                                                        21 pts
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        borderLeft: '4px solid #10b981'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-118: Basic Authentication
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#dcfce7',
+                                                                color: '#166534',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                8 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Implement email/password authentication
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#ef4444',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                RW
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                Robert Wilson
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '1rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        borderLeft: '4px solid #10b981'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-119: Sprint Planning
+                                                            </h4>
+                                                            <span style={{
+                                                                backgroundColor: '#dcfce7',
+                                                                color: '#166534',
+                                                                padding: '0.125rem 0.375rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                5 pts
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            Create sprint planning interface
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <div style={{
+                                                                width: '1.5rem',
+                                                                height: '1.5rem',
+                                                                backgroundColor: '#06b6d4',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '0.75rem',
+                                                                color: 'white',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                LD
+                                                            </div>
+                                                            <span style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                                Lisa Davis
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Content Sections */}
-                                <div style={styles.sectionGrid}>
-                                    {/* Active Sprints Section */}
-                                    <div style={styles.card} className="premium-card fade-in">
-                                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
-                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
-                                                <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
-                                                {translate('Active Sprints')}
+                                {/* Backlog Management */}
+                                <div style={styles.card} className="premium-card fade-in">
+                                    <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
+                                                <FaList style={{ marginRight: '0.75rem', color: '#9333ea' }} />
+                                                {translate('Product Backlog Management')}
                                             </h2>
-                                        </div>
-                                        <div style={{ padding: '1.5rem' }}>
-                                            {data.sprints && data.sprints.length > 0 ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                                    {data.sprints.map((sprint) => (
-                                                        <div key={sprint.id} style={{
-                                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                                                            borderRadius: '0.5rem',
-                                                            padding: '1rem',
-                                                            transition: 'box-shadow 0.2s ease'
-                                                        }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                                <div>
-                                                                    <h3 style={{ fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>{sprint.name}</h3>
-                                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                                        {sprint.start_date} - {sprint.end_date}
-                                                                    </p>
-                                                                </div>
-                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                                    <div style={{ textAlign: 'right' }}>
-                                                                        <p style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
-                                                                            {data.workItems?.filter(wi => wi.sprint_id === sprint.id).length || 0}
-                                                                        </p>
-                                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('stories')}</p>
-                                                                    </div>
-                                                                    <div style={{
-                                                                        width: '0.75rem',
-                                                                        height: '0.75rem',
-                                                                        backgroundColor: '#16a34a',
-                                                                        borderRadius: '50%'
-                                                                    }}></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                    <FaCalendarAlt style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('No active sprints')}</p>
-                                                    <button style={{
-                                                        ...styles.button,
-                                                        marginTop: '1rem'
-                                                    }} className="premium-button">
-                                                        {translate('Create Sprint')}
-                                                    </button>
-                                                </div>
-                                            )}
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button style={{
+                                                    ...styles.buttonSecondary,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    <FaFilter style={{ marginRight: '0.5rem' }} />
+                                                    {translate('Filter & Sort')}
+                                                </button>
+                                                <button style={{
+                                                    ...styles.button,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    <FaPlus style={{ marginRight: '0.5rem' }} />
+                                                    {translate('Create Story')}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    {/* Retrospectives Section */}
-                                    <div style={styles.card} className="premium-card fade-in">
-                                        <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
-                                            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
-                                                <FaComments style={{ marginRight: '0.75rem', color: '#9333ea' }} />
-                                                {translate('Recent Retrospectives')}
-                                            </h2>
-                                        </div>
-                                        <div style={{ padding: '1.5rem' }}>
-                                            {data.retros && data.retros.length > 0 ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '24rem', overflowY: 'auto' }}>
-                                                    {data.retros.map((retro) => (
-                                                        <div key={retro.id} style={{
-                                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                                                            borderRadius: '0.5rem',
-                                                            padding: '1rem',
-                                                            transition: 'box-shadow 0.2s ease'
-                                                        }}>
-                                                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                                                                <div style={{ flex: 1 }}>
-                                                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                                        <h3 style={{ fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
-                                                                            {translate('Sprint')} {retro.sprint_id}
-                                                                        </h3>
-                                                                        <span style={{
-                                                                            marginLeft: '0.5rem',
-                                                                            padding: '0.25rem 0.5rem',
-                                                                            backgroundColor: '#dcfce7',
-                                                                            color: '#166534',
-                                                                            fontSize: '0.75rem',
-                                                                            borderRadius: '9999px'
-                                                                        }}>
-                                                                            Completed
-                                                                        </span>
-                                                                    </div>
-                                                                    <div style={{
-                                                                        display: 'grid',
-                                                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                                                                        gap: '1rem',
-                                                                        fontSize: '0.875rem'
-                                                                    }}>
-                                                                        <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Keep Doing')}</p>
-                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                                                {retro.keepDoing || 'No items'}
-                                                                            </p>
-                                                                        </div>
-                                                                        <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Start Doing')}</p>
-                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                                                {retro.startDoing || 'No items'}
-                                                                            </p>
-                                                                        </div>
-                                                                        <div>
-                                                                            <p style={{ fontWeight: '500', color: isDarkMode ? '#d1d5db' : '#374151' }}>{translate('Stop Doing')}</p>
-                                                                            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '0.25rem' }}>
-                                                                                {retro.stopDoing || 'No items'}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <button style={{
-                                                                    ...styles.button,
-                                                                    marginLeft: '1rem',
-                                                                    fontSize: '0.875rem',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center'
-                                                                }}>
-                                                                    <FaEye style={{ marginRight: '0.25rem' }} />
-                                                                    View Details
-                                                                </button>
-                                                            </div>
+                                    <div style={{ padding: '1.5rem' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            {/* Backlog Items with full Scrum Master controls */}
+                                            <div style={{
+                                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                                                borderRadius: '0.5rem',
+                                                padding: '1.5rem',
+                                                backgroundColor: isDarkMode ? '#1f2937' : 'white'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+                                                            <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-125: Advanced Reporting Dashboard
+                                                            </h3>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                13 pts
+                                                            </span>
+                                                            <span style={{
+                                                                backgroundColor: '#f3e8ff',
+                                                                color: '#7c3aed',
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                High Priority
+                                                            </span>
                                                         </div>
-                                                    ))}
+                                                        <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            As a Scrum Master, I want comprehensive reporting capabilities so that I can track team performance and provide insights to stakeholders.
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                            <span>Epic: Analytics & Reporting</span>
+                                                            <span>•</span>
+                                                            <span>Created: Dec 1, 2024</span>
+                                                            <span>•</span>
+                                                            <span>Business Value: High</span>
+                                                            <span>•</span>
+                                                            <span>Dependencies: US-118, US-119</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                                                        <button style={{
+                                                            ...styles.buttonSecondary,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem'
+                                                        }}>
+                                                            {translate('Edit')}
+                                                        </button>
+                                                        <button style={{
+                                                            ...styles.button,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem'
+                                                        }}>
+                                                            {translate('Add to Sprint')}
+                                                        </button>
+                                                        <button style={{
+                                                            ...styles.buttonSecondary,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem',
+                                                            backgroundColor: '#fef3c7',
+                                                            color: '#92400e'
+                                                        }}>
+                                                            {translate('Refine')}
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ) : (
-                                                <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                                    <FaComments style={{ color: isDarkMode ? '#6b7280' : '#9ca3af', fontSize: '2rem', margin: '0 auto 1rem' }} />
-                                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('No retrospectives yet')}</p>
-                                                    <button style={{
-                                                        ...styles.button,
-                                                        marginTop: '1rem',
-                                                        backgroundColor: '#9333ea'
-                                                    }}>
-                                                        {translate('Schedule Retrospective')}
-                                                    </button>
+                                            </div>
+
+                                            <div style={{
+                                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                                                borderRadius: '0.5rem',
+                                                padding: '1.5rem',
+                                                backgroundColor: isDarkMode ? '#1f2937' : 'white'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+                                                            <h3 style={{ fontSize: '1.125rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                US-126: Mobile Application
+                                                            </h3>
+                                                            <span style={{
+                                                                backgroundColor: '#fef3c7',
+                                                                color: '#92400e',
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                21 pts
+                                                            </span>
+                                                            <span style={{
+                                                                backgroundColor: '#fef2f2',
+                                                                color: '#dc2626',
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                Medium Priority
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>
+                                                            As a team member, I want to access the platform on mobile devices so that I can stay connected and productive while on the go.
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                                                            <span>Epic: Mobile Experience</span>
+                                                            <span>•</span>
+                                                            <span>Created: Dec 2, 2024</span>
+                                                            <span>•</span>
+                                                            <span>Business Value: Medium</span>
+                                                            <span>•</span>
+                                                            <span>Dependencies: US-125</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                                                        <button style={{
+                                                            ...styles.buttonSecondary,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem'
+                                                        }}>
+                                                            {translate('Edit')}
+                                                        </button>
+                                                        <button style={{
+                                                            ...styles.button,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem'
+                                                        }}>
+                                                            {translate('Add to Sprint')}
+                                                        </button>
+                                                        <button style={{
+                                                            ...styles.buttonSecondary,
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.5rem',
+                                                            backgroundColor: '#fef3c7',
+                                                            color: '#92400e'
+                                                        }}>
+                                                            {translate('Refine')}
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'sprints' && (
+                            <div style={styles.card}>
+                                <div style={{ padding: '1.5rem', borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', display: 'flex', alignItems: 'center' }}>
+                                            <FaCalendarAlt style={{ marginRight: '0.75rem', color: '#2563eb' }} />
+                                            {translate('Sprint Management')}
+                                        </h2>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button style={{
+                                                ...styles.buttonSecondary,
+                                                fontSize: '0.875rem',
+                                                padding: '0.5rem 1rem'
+                                            }}>
+                                                <FaEye style={{ marginRight: '0.5rem' }} />
+                                                {translate('Sprint History')}
+                                            </button>
+                                            <button style={{
+                                                ...styles.button,
+                                                fontSize: '0.875rem',
+                                                padding: '0.5rem 1rem'
+                                            }}>
+                                                <FaPlus style={{ marginRight: '0.5rem' }} />
+                                                {translate('Create Sprint')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ padding: '1.5rem' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                        {/* Current Sprint */}
+                                        <div style={{
+                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                                            borderRadius: '0.5rem',
+                                            padding: '1.5rem',
+                                            backgroundColor: isDarkMode ? '#1f2937' : 'white',
+                                            borderLeft: '4px solid #2563eb'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                    Sprint 3: User Authentication & Dashboard Features
+                                                </h3>
+                                                <span style={{
+                                                    backgroundColor: '#dbeafe',
+                                                    color: '#1e40af',
+                                                    padding: '0.25rem 0.75rem',
+                                                    borderRadius: '0.25rem',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: '500'
+                                                }}>
+                                                    Active
+                                                </span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Duration</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>Dec 1-15, 2024</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Capacity</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>42 points</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Completed</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: '#10b981' }}>21 points</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Remaining</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: '#f59e0b' }}>21 points</p>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button style={{
+                                                    ...styles.buttonSecondary,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    {translate('Sprint Planning')}
+                                                </button>
+                                                <button style={{
+                                                    ...styles.buttonSecondary,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    {translate('Daily Standup')}
+                                                </button>
+                                                <button style={{
+                                                    ...styles.button,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    {translate('Sprint Review')}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Upcoming Sprint */}
+                                        <div style={{
+                                            border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                                            borderRadius: '0.5rem',
+                                            padding: '1.5rem',
+                                            backgroundColor: isDarkMode ? '#1f2937' : 'white',
+                                            borderLeft: '4px solid #10b981'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                    Sprint 4: Advanced Features & Mobile App
+                                                </h3>
+                                                <span style={{
+                                                    backgroundColor: '#dcfce7',
+                                                    color: '#166534',
+                                                    padding: '0.25rem 0.75rem',
+                                                    borderRadius: '0.25rem',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: '500'
+                                                }}>
+                                                    Planned
+                                                </span>
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Duration</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>Dec 16-29, 2024</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Capacity</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>40 points</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Stories</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>5 planned</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>Status</p>
+                                                    <p style={{ fontSize: '1rem', fontWeight: '500', color: '#f59e0b' }}>Planning</p>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button style={{
+                                                    ...styles.buttonSecondary,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    {translate('Sprint Planning')}
+                                                </button>
+                                                <button style={{
+                                                    ...styles.button,
+                                                    fontSize: '0.875rem',
+                                                    padding: '0.5rem 1rem'
+                                                }}>
+                                                    {translate('Start Sprint')}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
