@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import {
     FaTachometerAlt,
@@ -21,7 +21,10 @@ import {
     FaMoon,
     FaList,
     FaFilter,
-    FaPlus
+    FaPlus,
+    FaEdit,
+    FaTrash,
+    FaCheck
 } from 'react-icons/fa';
 import { useTranslate } from './translate.jsx';
 
@@ -248,21 +251,59 @@ const getStyles = (isDarkMode) => ({
 
 const RoleDashboard = ({ userId }) => {
     const [user, setUser] = useState(null);
+    const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [data, setData] = useState({});
-    const [activeTab, setActiveTab] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const saved = localStorage.getItem('theme');
-        if (saved) {
-            return saved === 'dark';
-        }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    });
-    const translate = useTranslate();
 
+    // Modal states
+    const [showSprintDetails, setShowSprintDetails] = useState(false);
+    const [showAddStory, setShowAddStory] = useState(false);
+    const [showCreateSprint, setShowCreateSprint] = useState(false);
+    const [showSprintPlanning, setShowSprintPlanning] = useState(false);
+    const [showDailyStandup, setShowDailyStandup] = useState(false);
+    const [showSprintReview, setShowSprintReview] = useState(false);
+    const [showRetrospective, setShowRetrospective] = useState(false);
+    const [showEditStory, setShowEditStory] = useState(false);
+    const [showFilterModal, setShowFilterModal] = useState(false);
+
+    // Form states
+    const [newStory, setNewStory] = useState({
+        title: '',
+        description: '',
+        storyPoints: '',
+        assignee: '',
+        priority: 'medium',
+        epic: ''
+    });
+    const [editStory, setEditStory] = useState({});
+    const [newSprint, setNewSprint] = useState({
+        name: '',
+        startDate: '',
+        endDate: '',
+        capacity: '',
+        goal: ''
+    });
+    const [filterCriteria, setFilterCriteria] = useState({
+        status: 'all',
+        priority: 'all',
+        assignee: 'all',
+        epic: 'all'
+    });
+
+    // Loading states for actions
+    const [actionLoading, setActionLoading] = useState({
+        addStory: false,
+        editStory: false,
+        createSprint: false,
+        moveStory: false,
+        deleteStory: false
+    });
+
+    const translate = useTranslate();
     const styles = getStyles(isDarkMode);
 
     // Handle window resize
@@ -302,6 +343,308 @@ const RoleDashboard = ({ userId }) => {
     // Theme toggle function
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
+    };
+
+    // Action Handlers
+    const handleAddStory = async () => {
+        setActionLoading(prev => ({ ...prev, addStory: true }));
+        try {
+            const { data: story, error } = await supabase
+                .from('work_items')
+                .insert({
+                    title: newStory.title,
+                    description: newStory.description,
+                    story_points: parseInt(newStory.storyPoints),
+                    assignee: newStory.assignee,
+                    priority: newStory.priority,
+                    epic: newStory.epic,
+                    status: 'To Do',
+                    team_id: user.team_id,
+                    sprint_id: null
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                workItems: [...(prev.workItems || []), story]
+            }));
+
+            // Reset form and close modal
+            setNewStory({
+                title: '',
+                description: '',
+                storyPoints: '',
+                assignee: '',
+                priority: 'medium',
+                epic: ''
+            });
+            setShowAddStory(false);
+        } catch (error) {
+            console.error('Error adding story:', error);
+            alert('Failed to add story. Please try again.');
+        } finally {
+            setActionLoading(prev => ({ ...prev, addStory: false }));
+        }
+    };
+
+    const handleEditStory = async () => {
+        setActionLoading(prev => ({ ...prev, editStory: true }));
+        try {
+            const { error } = await supabase
+                .from('work_items')
+                .update({
+                    title: editStory.title,
+                    description: editStory.description,
+                    story_points: parseInt(editStory.storyPoints),
+                    assignee: editStory.assignee,
+                    priority: editStory.priority,
+                    epic: editStory.epic
+                })
+                .eq('id', editStory.id);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                workItems: prev.workItems.map(item =>
+                    item.id === editStory.id ? editStory : item
+                )
+            }));
+
+            setShowEditStory(false);
+            setEditStory({});
+        } catch (error) {
+            console.error('Error editing story:', error);
+            alert('Failed to edit story. Please try again.');
+        } finally {
+            setActionLoading(prev => ({ ...prev, editStory: false }));
+        }
+    };
+
+    const handleMoveStory = async (storyId, newStatus) => {
+        setActionLoading(prev => ({ ...prev, moveStory: true }));
+        try {
+            const { error } = await supabase
+                .from('work_items')
+                .update({ status: newStatus })
+                .eq('id', storyId);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                workItems: prev.workItems.map(item =>
+                    item.id === storyId ? { ...item, status: newStatus } : item
+                )
+            }));
+        } catch (error) {
+            console.error('Error moving story:', error);
+            alert('Failed to move story. Please try again.');
+        } finally {
+            setActionLoading(prev => ({ ...prev, moveStory: false }));
+        }
+    };
+
+    const handleDeleteStory = async (storyId) => {
+        if (!confirm('Are you sure you want to delete this story?')) return;
+
+        setActionLoading(prev => ({ ...prev, deleteStory: true }));
+        try {
+            const { error } = await supabase
+                .from('work_items')
+                .delete()
+                .eq('id', storyId);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                workItems: prev.workItems.filter(item => item.id !== storyId)
+            }));
+        } catch (error) {
+            console.error('Error deleting story:', error);
+            alert('Failed to delete story. Please try again.');
+        } finally {
+            setActionLoading(prev => ({ ...prev, deleteStory: false }));
+        }
+    };
+
+    const handleCreateSprint = async () => {
+        setActionLoading(prev => ({ ...prev, createSprint: true }));
+        try {
+            const { data: sprint, error } = await supabase
+                .from('sprints')
+                .insert({
+                    name: newSprint.name,
+                    start_date: newSprint.startDate,
+                    end_date: newSprint.endDate,
+                    capacity: parseInt(newSprint.capacity),
+                    goal: newSprint.goal,
+                    team_id: user.team_id,
+                    status: 'Planned'
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                sprints: [...(prev.sprints || []), sprint]
+            }));
+
+            // Reset form and close modal
+            setNewSprint({
+                name: '',
+                startDate: '',
+                endDate: '',
+                capacity: '',
+                goal: ''
+            });
+            setShowCreateSprint(false);
+        } catch (error) {
+            console.error('Error creating sprint:', error);
+            alert('Failed to create sprint. Please try again.');
+        } finally {
+            setActionLoading(prev => ({ ...prev, createSprint: false }));
+        }
+    };
+
+    const handleAddToSprint = async (storyId, sprintId) => {
+        try {
+            const { error } = await supabase
+                .from('work_items')
+                .update({ sprint_id: sprintId })
+                .eq('id', storyId);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                workItems: prev.workItems.map(item =>
+                    item.id === storyId ? { ...item, sprint_id: sprintId } : item
+                )
+            }));
+        } catch (error) {
+            console.error('Error adding story to sprint:', error);
+            alert('Failed to add story to sprint. Please try again.');
+        }
+    };
+
+    const handleStartSprint = async (sprintId) => {
+        try {
+            const { error } = await supabase
+                .from('sprints')
+                .update({ status: 'Active' })
+                .eq('id', sprintId);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                sprints: prev.sprints.map(sprint =>
+                    sprint.id === sprintId ? { ...sprint, status: 'Active' } : sprint
+                )
+            }));
+        } catch (error) {
+            console.error('Error starting sprint:', error);
+            alert('Failed to start sprint. Please try again.');
+        }
+    };
+
+    const handleCompleteSprint = async (sprintId) => {
+        try {
+            const { error } = await supabase
+                .from('sprints')
+                .update({ status: 'Completed' })
+                .eq('id', sprintId);
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                sprints: prev.sprints.map(sprint =>
+                    sprint.id === sprintId ? { ...sprint, status: 'Completed' } : sprint
+                )
+            }));
+        } catch (error) {
+            console.error('Error completing sprint:', error);
+            alert('Failed to complete sprint. Please try again.');
+        }
+    };
+
+    const handleScheduleRetrospective = async (sprintId) => {
+        try {
+            const { data: retro, error } = await supabase
+                .from('retrospectives')
+                .insert({
+                    sprint_id: sprintId,
+                    team_id: user.team_id,
+                    scheduled_date: new Date().toISOString(),
+                    status: 'Scheduled'
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Update local state
+            setData(prev => ({
+                ...prev,
+                retros: [...(prev.retros || []), retro]
+            }));
+
+            setShowRetrospective(false);
+        } catch (error) {
+            console.error('Error scheduling retrospective:', error);
+            alert('Failed to schedule retrospective. Please try again.');
+        }
+    };
+
+    // Form handlers
+    const handleNewStoryChange = (field, value) => {
+        setNewStory(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleEditStoryChange = (field, value) => {
+        setEditStory(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleNewSprintChange = (field, value) => {
+        setNewSprint(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleFilterChange = (field, value) => {
+        setFilterCriteria(prev => ({ ...prev, [field]: value }));
+    };
+
+    // Modal handlers
+    const openEditStory = (story) => {
+        setEditStory(story);
+        setShowEditStory(true);
+    };
+
+    const closeModal = () => {
+        setShowSprintDetails(false);
+        setShowAddStory(false);
+        setShowCreateSprint(false);
+        setShowSprintPlanning(false);
+        setShowDailyStandup(false);
+        setShowSprintReview(false);
+        setShowRetrospective(false);
+        setShowEditStory(false);
+        setShowFilterModal(false);
     };
 
     useEffect(() => {
@@ -593,20 +936,31 @@ const RoleDashboard = ({ userId }) => {
                                                 {translate('Current Sprint Kanban Board')}
                                             </h2>
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                <button style={{
-                                                    ...styles.buttonSecondary,
-                                                    fontSize: '0.875rem',
-                                                    padding: '0.5rem 1rem'
-                                                }}>
+                                                <button
+                                                    style={{
+                                                        ...styles.buttonSecondary,
+                                                        fontSize: '0.875rem',
+                                                        padding: '0.5rem 1rem'
+                                                    }}
+                                                    onClick={() => setShowSprintDetails(true)}
+                                                >
                                                     <FaEye style={{ marginRight: '0.5rem' }} />
                                                     {translate('Sprint Details')}
                                                 </button>
-                                                <button style={{
-                                                    ...styles.button,
-                                                    fontSize: '0.875rem',
-                                                    padding: '0.5rem 1rem'
-                                                }}>
-                                                    <FaPlus style={{ marginRight: '0.5rem' }} />
+                                                <button
+                                                    style={{
+                                                        ...styles.button,
+                                                        fontSize: '0.875rem',
+                                                        padding: '0.5rem 1rem'
+                                                    }}
+                                                    onClick={() => setShowAddStory(true)}
+                                                    disabled={actionLoading.addStory}
+                                                >
+                                                    {actionLoading.addStory ? (
+                                                        <FaSpinner style={{ marginRight: '0.5rem', animation: 'spin 1s linear infinite' }} />
+                                                    ) : (
+                                                        <FaPlus style={{ marginRight: '0.5rem' }} />
+                                                    )}
                                                     {translate('Add Story')}
                                                 </button>
                                             </div>
@@ -1384,49 +1738,258 @@ const RoleDashboard = ({ userId }) => {
                     ></div>
                 )}
             </div>
-        );
-    }
 
-    // Render other role dashboards (simplified for now)
-    if (primaryRole === 'ProductOwner') {
-        return (
-            <div style={styles.loadingContainer}>
-                <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Product Owner Dashboard')}</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Product Owner dashboard coming soon!')}</p>
-                </div>
-            </div>
-        );
-    }
-    if (primaryRole === 'RTE') {
-        return (
-            <div style={styles.loadingContainer}>
-                <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Release Train Engineer Dashboard')}</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('RTE dashboard coming soon!')}</p>
-                </div>
-            </div>
-        );
-    }
-    if (primaryRole === 'Sponsor') {
-        return (
-            <div style={styles.loadingContainer}>
-                <div style={styles.card}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Sponsor Dashboard')}</h2>
-                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Sponsor dashboard coming soon!')}</p>
-                </div>
-            </div>
-        );
-    }
+            {/* Modal Components */ }
+        {/* Add Story Modal */ }
+        {
+            showAddStory && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: isDarkMode ? '#1f2937' : 'white',
+                        borderRadius: '0.75rem',
+                        padding: '2rem',
+                        maxWidth: '600px',
+                        width: '90%',
+                        maxHeight: '90vh',
+                        overflowY: 'auto',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                {translate('Add New Story')}
+                            </h2>
+                            <button
+                                onClick={closeModal}
+                                style={{
+                                    backgroundColor: 'transparent',
+                                    border: 'none',
+                                    fontSize: '1.5rem',
+                                    cursor: 'pointer',
+                                    color: isDarkMode ? '#9ca3af' : '#6b7280',
+                                    padding: '0.5rem'
+                                }}
+                            >
+                                &times;
+                            </button>
+                        </div>
 
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                    {translate('Story Title')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newStory.title}
+                                    onChange={(e) => handleNewStoryChange('title', e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                        borderRadius: '0.5rem',
+                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                        color: isDarkMode ? '#f9fafb' : '#111827'
+                                    }}
+                                    placeholder="Enter story title..."
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                    {translate('Description')}
+                                </label>
+                                <textarea
+                                    value={newStory.description}
+                                    onChange={(e) => handleNewStoryChange('description', e.target.value)}
+                                    rows={3}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                        borderRadius: '0.5rem',
+                                        backgroundColor: isDarkMode ? '#374151' : 'white',
+                                        color: isDarkMode ? '#f9fafb' : '#111827',
+                                        resize: 'vertical'
+                                    }}
+                                    placeholder="Enter story description..."
+                                />
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                        {translate('Story Points')}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={newStory.storyPoints}
+                                        onChange={(e) => handleNewStoryChange('storyPoints', e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                            borderRadius: '0.5rem',
+                                            backgroundColor: isDarkMode ? '#374151' : 'white',
+                                            color: isDarkMode ? '#f9fafb' : '#111827'
+                                        }}
+                                        placeholder="1, 2, 3, 5, 8, 13..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                        {translate('Priority')}
+                                    </label>
+                                    <select
+                                        value={newStory.priority}
+                                        onChange={(e) => handleNewStoryChange('priority', e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                            borderRadius: '0.5rem',
+                                            backgroundColor: isDarkMode ? '#374151' : 'white',
+                                            color: isDarkMode ? '#f9fafb' : '#111827'
+                                        }}
+                                    >
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="critical">Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                        {translate('Assignee')}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newStory.assignee}
+                                        onChange={(e) => handleNewStoryChange('assignee', e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                            borderRadius: '0.5rem',
+                                            backgroundColor: isDarkMode ? '#374151' : 'white',
+                                            color: isDarkMode ? '#f9fafb' : '#111827'
+                                        }}
+                                        placeholder="Team member name..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                        {translate('Epic')}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newStory.epic}
+                                        onChange={(e) => handleNewStoryChange('epic', e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: isDarkMode ? '1px solid #4b5563' : '1px solid #d1d5db',
+                                            borderRadius: '0.5rem',
+                                            backgroundColor: isDarkMode ? '#374151' : 'white',
+                                            color: isDarkMode ? '#f9fafb' : '#111827'
+                                        }}
+                                        placeholder="Epic name..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                                <button
+                                    onClick={closeModal}
+                                    style={{
+                                        ...styles.buttonSecondary,
+                                        padding: '0.75rem 1.5rem'
+                                    }}
+                                >
+                                    {translate('Cancel')}
+                                </button>
+                                <button
+                                    onClick={handleAddStory}
+                                    disabled={actionLoading.addStory || !newStory.title}
+                                    style={{
+                                        ...styles.button,
+                                        padding: '0.75rem 1.5rem',
+                                        opacity: actionLoading.addStory || !newStory.title ? 0.6 : 1
+                                    }}
+                                >
+                                    {actionLoading.addStory ? (
+                                        <>
+                                            <FaSpinner style={{ marginRight: '0.5rem', animation: 'spin 1s linear infinite' }} />
+                                            {translate('Adding...')}
+                                        </>
+                                    ) : (
+                                        translate('Add Story')
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        </div >
+    );
+};
+
+// Render other role dashboards (simplified for now)
+if (primaryRole === 'ProductOwner') {
     return (
         <div style={styles.loadingContainer}>
             <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Unknown Role')}</h2>
-                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Role:')} {primaryRole}</p>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Product Owner Dashboard')}</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Product Owner dashboard coming soon!')}</p>
             </div>
         </div>
     );
-};
+}
+if (primaryRole === 'RTE') {
+    return (
+        <div style={styles.loadingContainer}>
+            <div style={styles.card}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Release Train Engineer Dashboard')}</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('RTE dashboard coming soon!')}</p>
+            </div>
+        </div>
+    );
+}
+if (primaryRole === 'Sponsor') {
+    return (
+        <div style={styles.loadingContainer}>
+            <div style={styles.card}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Sponsor Dashboard')}</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Sponsor dashboard coming soon!')}</p>
+            </div>
+        </div>
+    );
+}
+
+return (
+    <div style={styles.loadingContainer}>
+        <div style={styles.card}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Unknown Role')}</h2>
+            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Role:')} {primaryRole}</p>
+        </div>
+    </div>
+);
 
 export default RoleDashboard; 
