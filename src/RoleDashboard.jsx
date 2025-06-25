@@ -315,11 +315,11 @@ const RoleDashboard = ({ userId }) => {
                 setUser(userData);
 
                 // Get the primary role from the roles array
-                const primaryRole = userData.roles && userData.roles.length > 0 ? userData.roles[0] : 'ScrumMaster';
+                const primaryRole = userData.roles && userData.roles.length > 0 ? userData.roles[0] : 'Scrum Master';
 
                 // Fetch data based on role
                 let dashboardData = {};
-                if (primaryRole === 'ScrumMaster') {
+                if (primaryRole === 'Scrum Master') {
                     // Team velocity, active sprints, retrospectives
                     const { data: sprints } = await supabase.from('sprints').select('*').eq('team_id', userData.team_id);
                     const { data: workItems } = await supabase.from('work_items').select('*').eq('team_id', userData.team_id);
@@ -398,7 +398,7 @@ const RoleDashboard = ({ userId }) => {
     }
 
     // Get the primary role from the roles array
-    const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'ScrumMaster';
+    const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'Scrum Master';
 
     // Navigation items
     const navItems = [
@@ -412,7 +412,7 @@ const RoleDashboard = ({ userId }) => {
     ];
 
     // Render Scrum Master Dashboard
-    if (primaryRole === 'ScrumMaster') {
+    if (primaryRole === 'Scrum Master') {
         return (
             <div style={styles.container}>
                 {/* Sidebar */}
@@ -431,7 +431,7 @@ const RoleDashboard = ({ userId }) => {
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <img
                                     src="/scrumaster_ai_logo.png"
-                                    alt="ScrumMaster AI Logo"
+                                    alt="Scrumaster AI Logo"
                                     style={{
                                         height: '2rem',
                                         filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'

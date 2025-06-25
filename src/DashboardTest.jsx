@@ -229,7 +229,7 @@ const DashboardTest = () => {
                     <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaRocket style={{ color: '#2563eb', fontSize: '1.5rem', marginRight: '0.75rem' }} />
-                            <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>ScrumMaster AI</h1>
+                            <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>Scrumaster AI</h1>
                         </div>
                         <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
                             Welcome back, Test User
@@ -291,7 +291,7 @@ const DashboardTest = () => {
                                 <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
                                     Test User
                                 </p>
-                                <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>ScrumMaster</p>
+                                <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>Scrum Master</p>
                             </div>
                         </div>
                         <button

@@ -70,7 +70,7 @@ const TERM_MAP = {
 
     // Landing page terms
     'AI-Powered Agile for SAFe, Scrum & Hybrid Teams': 'AI-Powered Huddle Method for Championship Teams',
-    'Built for RTEs, ScrumMasters, Product Owners & Sponsors': 'Built for Head Coaches, Quarterbacks, Offensive Coordinators & Owners',
+    'Built for RTEs, Scrum Masters, Product Owners & Sponsors': 'Built for Head Coaches, Quarterbacks, Offensive Coordinators & Owners',
     'AI Planning Assistant': 'AI Strategy Assistant',
     'Role-Based Dashboards': 'Position-Based Command Centers',
     'ROAM Risk Tracking': 'ROAM Threat Tracking',

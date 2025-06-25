@@ -12,7 +12,7 @@ import { useTranslate } from './translate.jsx'
 
 const FEATURES = [
   { icon: <FaRobot size={32} color="#2196f3" />, title: 'AI Planning Assistant', desc: 'Automate PI, sprint, and backlog planning with AI-driven insights.' },
-  { icon: <FaUserShield size={32} color="#2196f3" />, title: 'Role-Based Dashboards', desc: 'Custom views for RTEs, ScrumMasters, Product Owners, and Sponsors.' },
+  { icon: <FaUserShield size={32} color="#2196f3" />, title: 'Role-Based Dashboards', desc: 'Custom views for RTEs, Scrum Masters, Product Owners, and Sponsors.' },
   { icon: <FaExclamationTriangle size={32} color="#2196f3" />, title: 'ROAM Risk Tracking', desc: 'Visualize, manage, and mitigate program risks in real time.' },
   { icon: <FaChartLine size={32} color="#2196f3" />, title: 'Real-Time Metrics', desc: 'Track velocity, predictability, and team health instantly.' },
   { icon: <FaUsers size={32} color="#2196f3" />, title: 'Team Collaboration', desc: 'Foster team communication with integrated retrospectives and feedback tools.' },
@@ -43,7 +43,7 @@ function LandingContent() {
   // Wrap features and pricing with translated terms
   const features = [
     { icon: <FaRobot size={32} color="#2196f3" />, title: translate('AI Planning Assistant'), desc: translate('Automate PI, sprint, and backlog planning with AI-driven insights.') },
-    { icon: <FaUserShield size={32} color="#2196f3" />, title: translate('Role-Based Dashboards'), desc: translate('Custom views for RTEs, ScrumMasters, Product Owners, and Sponsors.') },
+    { icon: <FaUserShield size={32} color="#2196f3" />, title: translate('Role-Based Dashboards'), desc: translate('Custom views for RTEs, Scrum Masters, Product Owners, and Sponsors.') },
     { icon: <FaExclamationTriangle size={32} color="#2196f3" />, title: translate('ROAM Risk Tracking'), desc: translate('Visualize, manage, and mitigate program risks in real time.') },
     { icon: <FaChartLine size={32} color="#2196f3" />, title: translate('Real-Time Metrics'), desc: translate('Track velocity, predictability, and team health instantly.') },
     { icon: <FaUsers size={32} color="#2196f3" />, title: translate('Team Collaboration'), desc: translate('Foster team communication with integrated retrospectives and feedback tools.') },
@@ -85,7 +85,7 @@ function LandingContent() {
         }}></div>
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="hero-title">{translate('AI-Powered Agile for SAFe, Scrum & Hybrid Teams')}</h1>
-          <h2 className="hero-sub">{translate('Built for RTEs, ScrumMasters, Product Owners & Sponsors')}</h2>
+          <h2 className="hero-sub">{translate('Built for RTEs, Scrum Masters, Product Owners & Sponsors')}</h2>
           <div className="hero-cta">
             <button className="cta-btn primary" onClick={() => setShowLogin(true)}>{translate('Start Free Trial')}</button>
             <button className="cta-btn" onClick={() => setShowLogin(true)}>{translate('Login')}</button>
@@ -198,7 +198,7 @@ function App() {
                 auth_id: authUser.id,
                 email: authUser.email,
                 full_name: authUser.user_metadata?.full_name || authUser.email,
-                roles: ['ScrumMaster'] // default role
+                roles: ['Scrum Master'] // default role
               })
               .select()
               .single()
