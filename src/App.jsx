@@ -52,7 +52,7 @@ function LandingContent() {
 
   return (
     <div className="landing-root">
-      <header className="sticky-header">
+      <header className="sticky-header" style={{ backgroundColor: '#111111' }}>
         <img src="/scrumaster_ai_logo.png" alt="Scrumaster AI Logo" className="nav-logo" />
         <nav>
           <TerminologyToggle />

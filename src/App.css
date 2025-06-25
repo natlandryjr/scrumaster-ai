@@ -195,7 +195,7 @@ html {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(17, 17, 17, 0.95) !important;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1rem 2rem;
@@ -211,7 +211,7 @@ html {
 
 .nav-logo {
   height: 40px;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 2px #2196f3);
   transition: transform 0.3s ease;
 }
 
@@ -253,6 +253,12 @@ nav {
 .nav-btn.primary:hover {
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
   transform: translateY(-3px);
+}
+
+.nav-btn,
+nav .nav-btn,
+nav .nav-btn.primary {
+  color: #fff !important;
 }
 
 .hero-section {
