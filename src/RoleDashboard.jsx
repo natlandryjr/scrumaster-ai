@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import {
-    FaTachometerAlt,
     FaUsers,
     FaExclamationTriangle,
     FaChartLine,
     FaComments,
     FaCalendarAlt,
-    FaRocket,
     FaEye,
-    FaClock,
-    FaCheckCircle,
     FaSpinner,
     FaBars,
-    FaTimes,
     FaSignOutAlt,
     FaCog,
     FaBell,
@@ -21,10 +16,7 @@ import {
     FaMoon,
     FaList,
     FaFilter,
-    FaPlus,
-    FaEdit,
-    FaTrash,
-    FaCheck
+    FaPlus
 } from 'react-icons/fa';
 import { useTranslate } from './translate.jsx';
 
@@ -757,7 +749,8 @@ const RoleDashboard = ({ userId }) => {
     // Render Scrum Master Dashboard
     if (primaryRole === 'Scrum Master') {
         return (
-            <div style={styles.container}>
+            <>
+                <div style={styles.container}>
                 {/* Sidebar */}
                 <div style={{
                     ...styles.sidebar,
@@ -1707,18 +1700,223 @@ const RoleDashboard = ({ userId }) => {
 
                         {activeTab === 'metrics' && (
                             <div style={styles.card}>
-                                <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Metrics & Analytics')}</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Advanced metrics and analytics coming soon!')}</p>
+                                <div style={{ padding: '2rem' }}>
+                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1.5rem' }}>{translate('Metrics & Analytics')}</h2>
+
+                                    {/* Team Velocity Metrics */}
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1rem' }}>{translate('Team Velocity')}</h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                            <div style={{
+                                                backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                padding: '1rem',
+                                                borderRadius: '0.5rem',
+                                                border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb'
+                                            }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>{translate('Average Velocity')}</p>
+                                                <p style={{ fontSize: '1.5rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                    {data.velocity || 0} {translate('points/sprint')}
+                                                </p>
+                                            </div>
+                                            <div style={{
+                                                backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                padding: '1rem',
+                                                borderRadius: '0.5rem',
+                                                border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb'
+                                            }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>{translate('Total Sprints')}</p>
+                                                <p style={{ fontSize: '1.5rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                    {data.sprints?.length || 0}
+                                                </p>
+                                            </div>
+                                            <div style={{
+                                                backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                padding: '1rem',
+                                                borderRadius: '0.5rem',
+                                                border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb'
+                                            }}>
+                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>{translate('Completed Stories')}</p>
+                                                <p style={{ fontSize: '1.5rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                    {data.workItems?.filter(wi => wi.status === 'Done').length || 0}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Sprint Performance */}
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1rem' }}>{translate('Recent Sprint Performance')}</h3>
+                                        <div style={{ overflowX: 'auto' }}>
+                                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                                <thead>
+                                                    <tr style={{ borderBottom: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb' }}>
+                                                        <th style={{ textAlign: 'left', padding: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', fontWeight: '500' }}>{translate('Sprint')}</th>
+                                                        <th style={{ textAlign: 'left', padding: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', fontWeight: '500' }}>{translate('Status')}</th>
+                                                        <th style={{ textAlign: 'left', padding: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', fontWeight: '500' }}>{translate('Committed')}</th>
+                                                        <th style={{ textAlign: 'left', padding: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', fontWeight: '500' }}>{translate('Completed')}</th>
+                                                        <th style={{ textAlign: 'left', padding: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', fontWeight: '500' }}>{translate('Velocity')}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {data.sprints?.slice(0, 5).map(sprint => {
+                                                        const sprintItems = data.workItems?.filter(wi => wi.sprint_id === sprint.id) || [];
+                                                        const committed = sprintItems.reduce((sum, wi) => sum + (wi.story_points || 0), 0);
+                                                        const completed = sprintItems.filter(wi => wi.status === 'Done').reduce((sum, wi) => sum + (wi.story_points || 0), 0);
+                                                        return (
+                                                            <tr key={sprint.id} style={{ borderBottom: isDarkMode ? '1px solid #374151' : '1px solid #f3f4f6' }}>
+                                                                <td style={{ padding: '0.75rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{sprint.name}</td>
+                                                                <td style={{ padding: '0.75rem' }}>
+                                                                    <span style={{
+                                                                        padding: '0.25rem 0.5rem',
+                                                                        borderRadius: '0.25rem',
+                                                                        fontSize: '0.75rem',
+                                                                        fontWeight: '500',
+                                                                        backgroundColor: sprint.status === 'Completed' ? '#dcfce7' : sprint.status === 'Active' ? '#dbeafe' : '#fef3c7',
+                                                                        color: sprint.status === 'Completed' ? '#166534' : sprint.status === 'Active' ? '#1d4ed8' : '#92400e'
+                                                                    }}>
+                                                                        {translate(sprint.status)}
+                                                                    </span>
+                                                                </td>
+                                                                <td style={{ padding: '0.75rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{committed}</td>
+                                                                <td style={{ padding: '0.75rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{completed}</td>
+                                                                <td style={{ padding: '0.75rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{completed}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    {/* Work Item Distribution */}
+                                    <div>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1rem' }}>{translate('Work Item Distribution')}</h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+                                            {['To Do', 'In Progress', 'Done'].map(status => {
+                                                const count = data.workItems?.filter(wi => wi.status === status).length || 0;
+                                                const total = data.workItems?.length || 1;
+                                                const percentage = Math.round((count / total) * 100);
+                                                return (
+                                                    <div key={status} style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                        padding: '1rem',
+                                                        borderRadius: '0.5rem',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                        textAlign: 'center'
+                                                    }}>
+                                                        <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>{translate(status)}</p>
+                                                        <p style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.25rem' }}>{count}</p>
+                                                        <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{percentage}%</p>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {activeTab === 'retrospectives' && (
                             <div style={styles.card}>
-                                <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Retrospectives')}</h2>
-                                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Retrospective management features coming soon!')}</p>
+                                <div style={{ padding: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>{translate('Retrospectives')}</h2>
+                                        <button
+                                            onClick={() => setShowRetrospective(true)}
+                                            style={{
+                                                ...styles.button,
+                                                padding: '0.5rem 1rem',
+                                                fontSize: '0.875rem'
+                                            }}
+                                        >
+                                            {translate('Schedule Retrospective')}
+                                        </button>
+                                    </div>
+
+                                    {/* Recent Retrospectives */}
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1rem' }}>{translate('Recent Retrospectives')}</h3>
+                                        {data.retros && data.retros.length > 0 ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                {data.retros.slice(0, 5).map(retro => (
+                                                    <div key={retro.id} style={{
+                                                        backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                        padding: '1rem',
+                                                        borderRadius: '0.5rem',
+                                                        border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb'
+                                                    }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                                            <h4 style={{ fontSize: '0.875rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827' }}>
+                                                                {translate('Sprint')} {retro.sprint_id}
+                                                            </h4>
+                                                            <span style={{
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '0.25rem',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '500',
+                                                                backgroundColor: '#dcfce7',
+                                                                color: '#166534'
+                                                            }}>
+                                                                {translate('Completed')}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.25rem' }}>{translate('Keep Doing')}</p>
+                                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{retro.keepDoing || translate('No feedback')}</p>
+                                                            </div>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.25rem' }}>{translate('Start Doing')}</p>
+                                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{retro.startDoing || translate('No feedback')}</p>
+                                                            </div>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.25rem' }}>{translate('Stop Doing')}</p>
+                                                                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#f9fafb' : '#111827' }}>{retro.stopDoing || translate('No feedback')}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                                padding: '2rem',
+                                                borderRadius: '0.5rem',
+                                                border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                                                textAlign: 'center'
+                                            }}>
+                                                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '1rem' }}>{translate('No retrospectives found')}</p>
+                                                <button
+                                                    onClick={() => setShowRetrospective(true)}
+                                                    style={{
+                                                        ...styles.button,
+                                                        padding: '0.5rem 1rem',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    {translate('Schedule First Retrospective')}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Retrospective Insights */}
+                                    <div>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: '500', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '1rem' }}>{translate('Retrospective Insights')}</h3>
+                                        <div style={{
+                                            backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
+                                            padding: '1rem',
+                                            borderRadius: '0.5rem',
+                                            border: isDarkMode ? '1px solid #4b5563' : '1px solid #e5e7eb'
+                                        }}>
+                                            <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '0.5rem' }}>{translate('Common Patterns')}</p>
+                                            <ul style={{ fontSize: '0.875rem', color: isDarkMode ? '#f9fafb' : '#111827', paddingLeft: '1.5rem' }}>
+                                                <li>{translate('Team communication improvements needed')}</li>
+                                                <li>{translate('Process optimization opportunities')}</li>
+                                                <li>{translate('Technical debt management')}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -1740,9 +1938,8 @@ const RoleDashboard = ({ userId }) => {
             </div>
 
             {/* Modal Components */}
-        {/* Add Story Modal */}
-        {
-            showAddStory && (
+            {/* Add Story Modal */}
+            {showAddStory && (
                 <div style={{
                     position: 'fixed',
                     top: 0,
@@ -1945,51 +2142,51 @@ const RoleDashboard = ({ userId }) => {
                         </div>
                     </div>
                 </div>
-            )
-        }
-        </div >
+            )}
+            </>
+        );
+    }
+
+    // Render other role dashboards (simplified for now)
+    if (primaryRole === 'ProductOwner') {
+        return (
+            <div style={styles.loadingContainer}>
+                <div style={styles.card}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Product Owner Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Product Owner dashboard coming soon!')}</p>
+                </div>
+            </div>
+        );
+    }
+    if (primaryRole === 'RTE') {
+        return (
+            <div style={styles.loadingContainer}>
+                <div style={styles.card}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Release Train Engineer Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('RTE dashboard coming soon!')}</p>
+                </div>
+            </div>
+        );
+    }
+    if (primaryRole === 'Sponsor') {
+        return (
+            <div style={styles.loadingContainer}>
+                <div style={styles.card}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Sponsor Dashboard')}</h2>
+                    <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Sponsor dashboard coming soon!')}</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div style={styles.loadingContainer}>
+            <div style={styles.card}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Unknown Role')}</h2>
+                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Role:')} {primaryRole}</p>
+            </div>
+        </div>
     );
 };
 
-// Render other role dashboards (simplified for now)
-if (primaryRole === 'ProductOwner') {
-    return (
-        <div style={styles.loadingContainer}>
-            <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Product Owner Dashboard')}</h2>
-                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Product Owner dashboard coming soon!')}</p>
-            </div>
-        </div>
-    );
-}
-if (primaryRole === 'RTE') {
-    return (
-        <div style={styles.loadingContainer}>
-            <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Release Train Engineer Dashboard')}</h2>
-                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('RTE dashboard coming soon!')}</p>
-            </div>
-        </div>
-    );
-}
-if (primaryRole === 'Sponsor') {
-    return (
-        <div style={styles.loadingContainer}>
-            <div style={styles.card}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Sponsor Dashboard')}</h2>
-                <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Sponsor dashboard coming soon!')}</p>
-            </div>
-        </div>
-    );
-}
-
-return (
-    <div style={styles.loadingContainer}>
-        <div style={styles.card}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827', marginBottom: '0.5rem' }}>{translate('Unknown Role')}</h2>
-            <p style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{translate('Role:')} {primaryRole}</p>
-        </div>
-    </div>
-);
-
-export default RoleDashboard; 
+export default RoleDashboard;
