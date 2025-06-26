@@ -67,30 +67,59 @@ function LandingContent() {
         </nav>
       </header>
 
-      <section className="hero-section" style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        position: 'relative'
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          zIndex: 1
-        }}></div>
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} style={{ position: 'relative', zIndex: 2 }}>
-          <h1 className="hero-title">{translate('AI-Powered Agile for SAFe, Scrum & Hybrid Teams')}</h1>
-          <h2 className="hero-sub">{translate('Built for RTEs, Scrum Masters, Product Owners & Sponsors')}</h2>
-          <div className="hero-cta">
-            <button className="cta-btn primary" onClick={() => setShowLogin(true)}>{translate('Start Free Trial')}</button>
-            <button className="cta-btn" onClick={() => setShowLogin(true)}>{translate('Login')}</button>
-          </div>
-        </motion.div>
+      <section className="hero-section">
+        <div className="hero-background">
+          <div className="hero-gradient"></div>
+          <div className="hero-pattern"></div>
+        </div>
+        <div className="hero-content">
+          <motion.div
+            className="hero-text"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="hero-title">{translate('AI-Powered Agile for SAFe, Scrum & Hybrid Teams')}</h1>
+            <p className="hero-subtitle">{translate('Built for RTEs, Scrum Masters, Product Owners & Sponsors')}</p>
+            <p className="hero-description">
+              Streamline your agile processes with intelligent automation, real-time insights, and role-based dashboards designed for modern software teams.
+            </p>
+            <div className="hero-cta">
+              <button className="cta-btn primary" onClick={() => setShowLogin(true)}>
+                {translate('Start Free Trial')}
+              </button>
+              <button className="cta-btn secondary" onClick={() => setShowLogin(true)}>
+                {translate('Login')}
+              </button>
+            </div>
+          </motion.div>
+          <motion.div
+            className="hero-visual"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="hero-card">
+              <div className="card-header">
+                <div className="card-avatar">🤖</div>
+                <div className="card-info">
+                  <h3>AI Assistant</h3>
+                  <p>Ready to help</p>
+                </div>
+              </div>
+              <div className="card-content">
+                <div className="metric">
+                  <span className="metric-value">87%</span>
+                  <span className="metric-label">Faster Planning</span>
+                </div>
+                <div className="metric">
+                  <span className="metric-value">24/7</span>
+                  <span className="metric-label">Support</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       <section className="modes-edu-section">
